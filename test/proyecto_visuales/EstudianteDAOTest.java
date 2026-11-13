@@ -8,6 +8,7 @@ public class EstudianteDAOTest {
     public static void main(String[] args) {
         probarBusquedaPorMatricula();
         probarActualizacion();
+        probarEliminacion();
         System.out.println("OK: pruebas de EstudianteDAO superadas");
     }
 
@@ -40,6 +41,15 @@ public class EstudianteDAOTest {
         } finally {
             borrar(matricula);
         }
+    }
+
+    static void probarEliminacion() {
+        String matricula = "TEST-ELIMINAR";
+        borrar(matricula);
+        verificar(EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Eva", "Borrar", "")),
+                "debe guardar el estudiante de prueba");
+        verificar(EstudianteDAO.eliminarEstudiante(matricula), "debe eliminar");
+        verificar(EstudianteDAO.buscarEstudiantePorMatricula(matricula) == null, "ya no debe existir");
     }
 
     private static void verificar(boolean condicion, String mensaje) {
