@@ -82,6 +82,31 @@ public class EstudianteDAO {
         }
     }
 
+    public static boolean actualizarEstudiante(Estudiante est) {
+        ultimoError = "";
+        if (est == null || vacio(est.getNombre()) || vacio(est.getApellido())) {
+            ultimoError = "Nombre y apellido son obligatorios.";
+            return false;
+        }
+        String sql = "update estudiantes set nombre=?, apellido=?, email=? where matricula=?";
+        try {
+            Connection cc = new conexion().conectar();
+            PreparedStatement pst = cc.prepareStatement(sql);
+            pst.setString(1, est.getNombre().trim());
+            pst.setString(2, est.getApellido().trim());
+            pst.setString(3, est.getEmail());
+            pst.setString(4, est.getMatricula());
+            int n = pst.executeUpdate();
+            if (n == 0) {
+                ultimoError = "No existe un estudiante con matrícula " + est.getMatricula() + ".";
+            }
+            return n > 0;
+        } catch (SQLException ex) {
+            ultimoError = "Error al actualizar estudiante: " + ex.getMessage();
+            return false;
+        }
+    }
+
     private static boolean vacio(String texto) {
         return texto == null || texto.trim().isEmpty();
     }
