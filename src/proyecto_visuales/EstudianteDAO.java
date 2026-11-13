@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EstudianteDAO {
 
@@ -32,5 +35,19 @@ public class EstudianteDAO {
             System.err.println("Error al buscar estudiante: " + ex.getMessage());
         }
         return null;
+    }
+
+    public static List<Estudiante> cargarEstudiantes() {
+        List<Estudiante> lista = new ArrayList<>();
+        try (Connection cc = new conexion().conectar();
+             Statement st = cc.createStatement();
+             ResultSet rs = st.executeQuery("select * from estudiantes order by apellido, nombre")) {
+            while (rs.next()) {
+                lista.add(mapear(rs));
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al listar estudiantes: " + ex.getMessage());
+        }
+        return lista;
     }
 }
