@@ -7,6 +7,7 @@ public class EstudianteDAOTest {
 
     public static void main(String[] args) {
         probarBusquedaPorMatricula();
+        probarActualizacion();
         System.out.println("OK: pruebas de EstudianteDAO superadas");
     }
 
@@ -20,6 +21,22 @@ public class EstudianteDAOTest {
             verificar(est != null, "debe encontrar la matrícula insertada");
             verificar("Ana".equals(est.getNombre()) && "Prueba".equals(est.getApellido()),
                     "nombre y apellido llegan en campos separados");
+        } finally {
+            borrar(matricula);
+        }
+    }
+
+    static void probarActualizacion() {
+        String matricula = "TEST-ACTUALIZAR";
+        borrar(matricula);
+        verificar(EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Luis", "Viejo", "")),
+                "debe guardar el estudiante de prueba");
+        try {
+            verificar(EstudianteDAO.actualizarEstudiante(
+                    new Estudiante(matricula, "Luis", "Nuevo", "luis@prueba.com")), "debe actualizar");
+            Estudiante est = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
+            verificar("Nuevo".equals(est.getApellido()), "el apellido queda actualizado");
+            verificar("luis@prueba.com".equals(est.getEmail()), "el email queda actualizado");
         } finally {
             borrar(matricula);
         }
