@@ -10,7 +10,13 @@ import java.util.List;
 
 public class EstudianteDAO {
 
+    private static String ultimoError = "";
+
     private EstudianteDAO() {
+    }
+
+    public static String getUltimoError() {
+        return ultimoError;
     }
 
     private static Estudiante mapear(ResultSet rs) throws SQLException {
@@ -52,9 +58,10 @@ public class EstudianteDAO {
     }
 
     public static boolean guardarEstudiante(Estudiante estudiante) {
+        ultimoError = "";
         if (estudiante == null || vacio(estudiante.getMatricula())
                 || vacio(estudiante.getNombre()) || vacio(estudiante.getApellido())) {
-            System.err.println("Matrícula, nombre y apellido son obligatorios.");
+            ultimoError = "Matrícula, nombre y apellido son obligatorios.";
             return false;
         }
         String sql = "insert into estudiantes(matricula,nombre,apellido,email) values (?,?,?,?)";
@@ -66,7 +73,11 @@ public class EstudianteDAO {
             pst.setString(4, estudiante.getEmail());
             return pst.executeUpdate() > 0;
         } catch (SQLException ex) {
-            System.err.println("Error al guardar estudiante: " + ex.getMessage());
+            if (ex.getErrorCode() == 1062) {
+                ultimoError = "La matrícula " + estudiante.getMatricula().trim() + " ya está registrada.";
+            } else {
+                ultimoError = "Error al guardar estudiante: " + ex.getMessage();
+            }
             return false;
         }
     }
