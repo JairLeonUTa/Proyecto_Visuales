@@ -52,6 +52,11 @@ public class EstudianteDAO {
     }
 
     public static boolean guardarEstudiante(Estudiante estudiante) {
+        if (estudiante == null || vacio(estudiante.getMatricula())
+                || vacio(estudiante.getNombre()) || vacio(estudiante.getApellido())) {
+            System.err.println("Matrícula, nombre y apellido son obligatorios.");
+            return false;
+        }
         String sql = "insert into estudiantes(matricula,nombre,apellido,email) values (?,?,?,?)";
         try (Connection cc = new conexion().conectar();
              PreparedStatement pst = cc.prepareStatement(sql)) {
@@ -64,5 +69,9 @@ public class EstudianteDAO {
             System.err.println("Error al guardar estudiante: " + ex.getMessage());
             return false;
         }
+    }
+
+    private static boolean vacio(String texto) {
+        return texto == null || texto.trim().isEmpty();
     }
 }
