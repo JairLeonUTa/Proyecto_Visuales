@@ -50,4 +50,19 @@ public class EstudianteDAO {
         }
         return lista;
     }
+
+    public static boolean guardarEstudiante(Estudiante estudiante) {
+        String sql = "insert into estudiantes(matricula,nombre,apellido,email) values (?,?,?,?)";
+        try (Connection cc = new conexion().conectar();
+             PreparedStatement pst = cc.prepareStatement(sql)) {
+            pst.setString(1, estudiante.getMatricula().trim());
+            pst.setString(2, estudiante.getNombre().trim());
+            pst.setString(3, estudiante.getApellido().trim());
+            pst.setString(4, estudiante.getEmail());
+            return pst.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Error al guardar estudiante: " + ex.getMessage());
+            return false;
+        }
+    }
 }
