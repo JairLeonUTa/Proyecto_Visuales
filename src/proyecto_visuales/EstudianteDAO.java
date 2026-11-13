@@ -18,4 +18,19 @@ public class EstudianteDAO {
         est.setEmail(rs.getString("email"));
         return est;
     }
+
+    public static Estudiante buscarEstudiantePorMatricula(String matricula) {
+        try {
+            Connection cc = new conexion().conectar();
+            PreparedStatement pst = cc.prepareStatement("select * from estudiantes where matricula=?");
+            pst.setString(1, matricula);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return mapear(rs);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al buscar estudiante: " + ex.getMessage());
+        }
+        return null;
+    }
 }
