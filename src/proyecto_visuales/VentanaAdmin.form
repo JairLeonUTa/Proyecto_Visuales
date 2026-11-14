@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="title" type="java.lang.String" value="Administraci&#xf3;n - Asistencia QR"/>
+    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+      <Dimension value="[820, 590]"/>
+    </Property>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="true"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="18" max="18" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lblMatricula" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblNombre" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblApellido" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblEmail" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="12" max="12" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="txtMatricula" min="-2" pref="180" max="-2" attributes="0"/>
+                          <Component id="txtNombre" min="-2" pref="180" max="-2" attributes="0"/>
+                          <Component id="txtApellido" min="-2" pref="180" max="-2" attributes="0"/>
+                          <Component id="txtEmail" min="-2" pref="180" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="12" max="12" attributes="0"/>
+                      <Component id="lblQr" min="200" pref="200" max="200" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="lblCodigoMateria" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="12" max="12" attributes="0"/>
+                      <Component id="txtCodigoMateria" min="-2" pref="140" max="-2" attributes="0"/>
+                      <EmptySpace min="18" max="18" attributes="0"/>
+                      <Component id="lblNombreMateria" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="10" max="10" attributes="0"/>
+                      <Component id="txtNombreMateria" min="-2" pref="190" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="lblDia" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="10" max="10" attributes="0"/>
+                      <Component id="btnSeleccionarDias" min="-2" pref="150" max="-2" attributes="0"/>
+                      <EmptySpace min="8" max="8" attributes="0"/>
+                      <Component id="lblDiasSeleccionados" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="lblEstudianteInscribir" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="8" max="8" attributes="0"/>
+                      <Component id="cmbEstudiantes" min="-2" pref="200" max="-2" attributes="0"/>
+                      <EmptySpace min="12" max="12" attributes="0"/>
+                      <Component id="lblMateriaInscribir" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="8" max="8" attributes="0"/>
+                      <Component id="cmbMaterias" min="-2" pref="200" max="-2" attributes="0"/>
+                      <EmptySpace min="10" max="10" attributes="0"/>
+                      <Component id="btnInscribir" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lblTitulo" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblDatosEstudiante" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblHorario" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnCrearMateria" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblInscripcion" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblEstado" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="btnCrearEstudiante" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="btnAbrirQR" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace pref="18" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="14" max="14" attributes="0"/>
+              <Component id="lblTitulo" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="14" max="14" attributes="0"/>
+              <Component id="lblDatosEstudiante" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="8" max="8" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblMatricula" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtMatricula" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="6" max="6" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblNombre" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtNombre" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="6" max="6" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblApellido" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtApellido" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="6" max="6" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblEmail" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtEmail" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Component id="lblQr" min="210" pref="210" max="210" attributes="0"/>
+              </Group>
+              <EmptySpace min="8" max="8" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="btnCrearEstudiante" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnAbrirQR" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="14" max="14" attributes="0"/>
+              <Component id="lblHorario" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="8" max="8" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblCodigoMateria" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtCodigoMateria" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                  <Component id="lblNombreMateria" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtNombreMateria" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="6" max="6" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblDia" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnSeleccionarDias" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                  <Component id="lblDiasSeleccionados" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="8" max="8" attributes="0"/>
+              <Component id="btnCrearMateria" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="14" max="14" attributes="0"/>
+              <Component id="lblInscripcion" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="8" max="8" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblEstudianteInscribir" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cmbEstudiantes" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                  <Component id="lblMateriaInscribir" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cmbMaterias" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                  <Component id="btnInscribir" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="12" max="12" attributes="0"/>
+              <Component id="lblEstado" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="14" max="14" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblTitulo">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Administraci&#xf3;n de estudiantes y horarios"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblDatosEstudiante">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="1. Datos del estudiante"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMatricula">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Matr&#xed;cula:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtMatricula">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblNombre">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Nombre:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtNombre">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblApellido">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Apellido:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtApellido">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblEmail">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Email:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtEmail">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblQr">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="El QR aparecer&#xe1; aqu&#xed;"/>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="QR del estudiante"/>
+          </Border>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnCrearEstudiante">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Crear estudiante y generar QR"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnAbrirQR">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Abrir carpeta de QR"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblHorario">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="2. Crear materia y asignar horario"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblCodigoMateria">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="C&#xf3;digo:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtCodigoMateria">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblNombreMateria">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Materia:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtNombreMateria">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblDia">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Horarios:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnSeleccionarDias">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Seleccionar d&#xed;as..."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblDiasSeleccionados">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="2 d&#xed;as configurados"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnCrearMateria">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Crear materia y horario"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblInscripcion">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="3. Inscribir al estudiante en una materia"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblEstudianteInscribir">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Estudiante:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbEstudiantes">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMateriaInscribir">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Materia:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbMaterias">
+    </Component>
+    <Component class="javax.swing.JButton" name="btnInscribir">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Inscribir estudiante"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblEstado">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Listo."/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>
