@@ -25,6 +25,10 @@ public class RegistroDAO {
                 + "JOIN materias m WHERE e.matricula = ? AND m.codigo = ?";
         try {
             Connection cc = new conexion().conectar();
+            if (obtenerIdEstudiante(cc, matricula) == -1) {
+                ultimoError = "Estudiante no registrado: " + matricula + ".";
+                return false;
+            }
             if (yaRegistrado(cc, matricula, codigoMateria, fecha)) {
                 ultimoError = "Ya registró asistencia hoy en " + codigoMateria + ".";
                 return false;
@@ -55,6 +59,15 @@ public class RegistroDAO {
             ps.setString(3, fecha);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
+            }
+        }
+    }
+
+    private static int obtenerIdEstudiante(Connection cc, String matricula) throws SQLException {
+        try (PreparedStatement ps = cc.prepareStatement("SELECT id_estudiante FROM estudiantes WHERE matricula = ?")) {
+            ps.setString(1, matricula);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : -1;
             }
         }
     }
