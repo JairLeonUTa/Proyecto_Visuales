@@ -19,6 +19,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -51,6 +54,7 @@ public class VentanaPrincipal extends JFrame {
                 detenerCamara();
             }
         });
+        crearMenuAdministracion();
         cargarRegistros();
         refrescarPorcentaje();
     }
@@ -237,6 +241,15 @@ public class VentanaPrincipal extends JFrame {
         }
         texto.append("| Global: ").append(String.format("%.0f%%", suma / filas.size()));
         lblPorcentaje.setText(texto.toString());
+    }
+
+    private void crearMenuAdministracion() {
+        JMenu menuAdmin = new JMenu("Administración");
+        JMenuItem abrirAdmin = new JMenuItem("Estudiantes, materias e inscripciones");
+        menuAdmin.add(abrirAdmin);
+        JMenuBar barra = new JMenuBar();
+        barra.add(menuAdmin);
+        setJMenuBar(barra);
     }
 
     @SuppressWarnings("unchecked")
