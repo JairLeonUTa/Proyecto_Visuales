@@ -457,6 +457,10 @@ public class VentanaPrincipal extends JFrame {
         actualizarVista();
     }//GEN-LAST:event_btnRefrescarActionPerformed
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new VentanaPrincipal().setVisible(true));
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDetener;
     private javax.swing.JButton btnHorario;
