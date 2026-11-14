@@ -19,6 +19,14 @@ public class EstudianteDAO {
         return ultimoError;
     }
 
+    private static Connection abrirConexion() throws SQLException {
+        Connection cc = new conexion().conectar();
+        if (cc == null) {
+            throw new SQLException("No hay conexión con MySQL. Verifique que XAMPP esté encendido.");
+        }
+        return cc;
+    }
+
     private static Estudiante mapear(ResultSet rs) throws SQLException {
         Estudiante est = new Estudiante();
         est.setMatricula(rs.getString("matricula"));
@@ -29,32 +37,32 @@ public class EstudianteDAO {
     }
 
     public static Estudiante buscarEstudiantePorMatricula(String matricula) {
-        try {
-            Connection cc = new conexion().conectar();
-            try (cc; PreparedStatement pst = cc.prepareStatement("select * from estudiantes where matricula=?")) {
-                pst.setString(1, matricula);
-                try (ResultSet rs = pst.executeQuery()) {
-                    if (rs.next()) {
-                        return mapear(rs);
-                    }
+        ultimoError = "";
+        try (Connection cc = abrirConexion();
+             PreparedStatement pst = cc.prepareStatement("select * from estudiantes where matricula=?")) {
+            pst.setString(1, matricula);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return mapear(rs);
                 }
             }
         } catch (SQLException ex) {
-            System.err.println("Error al buscar estudiante: " + ex.getMessage());
+            ultimoError = "Error al buscar estudiante: " + ex.getMessage();
         }
         return null;
     }
 
     public static List<Estudiante> cargarEstudiantes() {
         List<Estudiante> lista = new ArrayList<>();
-        try (Connection cc = new conexion().conectar();
+        ultimoError = "";
+        try (Connection cc = abrirConexion();
              Statement st = cc.createStatement();
              ResultSet rs = st.executeQuery("select * from estudiantes order by apellido, nombre")) {
             while (rs.next()) {
                 lista.add(mapear(rs));
             }
         } catch (SQLException ex) {
-            System.err.println("Error al listar estudiantes: " + ex.getMessage());
+            ultimoError = "Error al listar estudiantes: " + ex.getMessage();
         }
         return lista;
     }
@@ -67,7 +75,7 @@ public class EstudianteDAO {
             return false;
         }
         String sql = "insert into estudiantes(matricula,nombre,apellido,email) values (?,?,?,?)";
-        try (Connection cc = new conexion().conectar();
+        try (Connection cc = abrirConexion();
              PreparedStatement pst = cc.prepareStatement(sql)) {
             pst.setString(1, estudiante.getMatricula().trim());
             pst.setString(2, estudiante.getNombre().trim());
@@ -92,7 +100,7 @@ public class EstudianteDAO {
         }
         String sql = "update estudiantes set nombre=?, apellido=?, email=? where matricula=?";
         try {
-            Connection cc = new conexion().conectar();
+            Connection cc = abrirConexion();
             PreparedStatement pst = cc.prepareStatement(sql);
             pst.setString(1, est.getNombre().trim());
             pst.setString(2, est.getApellido().trim());
@@ -111,7 +119,7 @@ public class EstudianteDAO {
 
     public static boolean eliminarEstudiante(String matricula) {
         ultimoError = "";
-        try (Connection cc = new conexion().conectar();
+        try (Connection cc = abrirConexion();
              PreparedStatement pst = cc.prepareStatement("delete from estudiantes where matricula=?")) {
             pst.setString(1, matricula);
             int n = pst.executeUpdate();
