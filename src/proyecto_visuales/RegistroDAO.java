@@ -162,7 +162,8 @@ public class RegistroDAO {
         String sql = "SELECT m.codigo, m.nombre, "
                 + "(SELECT COUNT(*) FROM horarios_materia h WHERE h.id_materia = m.id_materia) AS dias, "
                 + "(SELECT COUNT(*) FROM registros r WHERE r.id_materia = m.id_materia "
-                + "AND r.id_estudiante = e.id_estudiante) AS asistidas "
+                + "AND r.id_estudiante = e.id_estudiante "
+                + "AND r.fecha > DATE_SUB(CURDATE(), INTERVAL ? DAY)) AS asistidas "
                 + "FROM inscripciones i JOIN estudiantes e ON e.id_estudiante = i.id_estudiante "
                 + "JOIN materias m ON m.id_materia = i.id_materia "
                 + "WHERE e.matricula = ? ORDER BY m.codigo";
@@ -172,7 +173,8 @@ public class RegistroDAO {
             return lista;
         }
         try (cc; PreparedStatement pst = cc.prepareStatement(sql)) {
-            pst.setString(1, matricula);
+            pst.setInt(1, semanasPorParcial * 7);
+            pst.setString(2, matricula);
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     int asistidas = rs.getInt("asistidas");
