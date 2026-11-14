@@ -20,8 +20,12 @@ public class RegistroDAO {
     public static boolean guardarRegistro(String matricula, String codigoMateria, String fecha,
             String horaEntrada, boolean atraso) {
         ultimoError = "";
+        Connection cc = new conexion().conectar();
+        if (cc == null) {
+            ultimoError = "No hay conexión con MySQL. Verifique que XAMPP esté encendido.";
+            return false;
+        }
         try {
-            Connection cc = new conexion().conectar();
             int idEst = obtenerIdEstudiante(cc, matricula);
             if (idEst == -1) {
                 ultimoError = "Estudiante no registrado: " + matricula + ".";
