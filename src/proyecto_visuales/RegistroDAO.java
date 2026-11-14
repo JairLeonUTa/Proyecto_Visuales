@@ -10,6 +10,8 @@ import java.util.List;
 /** Acceso a la tabla registros (asistencias). */
 public class RegistroDAO {
 
+    public static final int SEMANAS_POR_PARCIAL = 8;
+
     private static final String SELECT_REGISTROS =
             "SELECT r.id_registro, e.matricula, e.nombre, e.apellido, m.codigo, m.nombre AS materia, "
             + "r.fecha, r.hora_entrada, r.es_atraso FROM registros r "
@@ -159,6 +161,7 @@ public class RegistroDAO {
     public static List<Object[]> porcentajePorEstudiante(String matricula, int semanasPorParcial) {
         ultimoError = "";
         List<Object[]> lista = new ArrayList<>();
+        int semanas = Math.max(1, Math.min(semanasPorParcial, SEMANAS_POR_PARCIAL));
         String sql = "SELECT m.codigo, m.nombre, "
                 + "(SELECT COUNT(*) FROM horarios_materia h WHERE h.id_materia = m.id_materia) AS dias, "
                 + "(SELECT COUNT(*) FROM registros r WHERE r.id_materia = m.id_materia "
@@ -173,13 +176,13 @@ public class RegistroDAO {
             return lista;
         }
         try (cc; PreparedStatement pst = cc.prepareStatement(sql)) {
-            pst.setInt(1, semanasPorParcial * 7);
+            pst.setInt(1, semanas * 7);
             pst.setString(2, matricula);
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     int asistidas = rs.getInt("asistidas");
-                    int clases = semanasPorParcial * rs.getInt("dias");
-                    double porcentaje = asistidas * 100.0 / clases;
+                    int clases = semanas * rs.getInt("dias");
+                    double porcentaje = Math.min(100.0, asistidas * 100.0 / clases);
                     lista.add(new Object[]{
                         rs.getString("codigo") + " - " + rs.getString("nombre"),
                         asistidas,
