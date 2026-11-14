@@ -18,6 +18,7 @@ public class RegistroDAOTest {
         try {
             probarRechazoDuplicado();
             probarListado();
+            probarPorcentajeSinRegistros();
         } finally {
             limpiar();
         }
@@ -44,6 +45,14 @@ public class RegistroDAOTest {
         verificar(fila.length == 7, "cada fila tiene las 7 columnas de la tabla");
         verificar("Prueba Registro".equals(fila[2]), "muestra el nombre completo del estudiante");
         verificar("No".equals(fila[6]), "muestra si llegó atrasado");
+    }
+
+    static void probarPorcentajeSinRegistros() {
+        reiniciar();
+        List<Object[]> filas = RegistroDAO.porcentajePorEstudiante(MATRICULA, 8);
+        verificar(filas.size() == 1, "hay una fila por materia inscrita");
+        verificar(((Number) filas.get(0)[1]).intValue() == 0, "sin registros no hay asistencias");
+        verificar(((Number) filas.get(0)[3]).doubleValue() == 0.0, "sin registros el porcentaje es 0");
     }
 
     /** Deja un estudiante inscrito en una materia de dos días y sin registros. */
