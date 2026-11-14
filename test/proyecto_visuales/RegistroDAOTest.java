@@ -17,6 +17,7 @@ public class RegistroDAOTest {
     public static void main(String[] args) {
         try {
             probarRechazoDuplicado();
+            probarListado();
         } finally {
             limpiar();
         }
@@ -31,6 +32,18 @@ public class RegistroDAOTest {
         verificar(!RegistroDAO.guardarRegistro(MATRICULA, MATERIA, hoy, "08:10", true),
                 "el segundo registro del mismo día se rechaza");
         verificar(RegistroDAO.getUltimoError().contains("Ya registró"), "explica que ya marcó asistencia");
+    }
+
+    static void probarListado() {
+        reiniciar();
+        String hoy = LocalDate.now().toString();
+        verificar(RegistroDAO.guardarRegistro(MATRICULA, MATERIA, hoy, "08:00", false), "registro de prueba");
+        List<Object[]> filas = RegistroDAO.listarRegistros(200);
+        Object[] fila = filas.stream().filter(f -> MATRICULA.equals(f[1])).findFirst().orElse(null);
+        verificar(fila != null, "el listado incluye el registro nuevo");
+        verificar(fila.length == 7, "cada fila tiene las 7 columnas de la tabla");
+        verificar("Prueba Registro".equals(fila[2]), "muestra el nombre completo del estudiante");
+        verificar("No".equals(fila[6]), "muestra si llegó atrasado");
     }
 
     /** Deja un estudiante inscrito en una materia de dos días y sin registros. */
