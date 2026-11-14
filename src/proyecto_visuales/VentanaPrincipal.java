@@ -2,6 +2,7 @@ package proyecto_visuales;
 
 import com.github.sarxos.webcam.Webcam;
 import java.awt.Dimension;
+import java.util.List;
 import javax.swing.JFrame;
 
 /** Ventana principal del control de asistencia mediante QR. */
@@ -15,8 +16,18 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void iniciarCamara() {
-        webcam = Webcam.getWebcams().get(0);
-        abrirCamara();
+        List<Webcam> camaras = Webcam.getWebcams();
+        if (camaras.isEmpty()) {
+            lblEstado.setText("No se detectó ninguna cámara web conectada.");
+            return;
+        }
+        webcam = camaras.get(0);
+        try {
+            abrirCamara();
+        } catch (RuntimeException ex) {
+            lblEstado.setText("No se pudo iniciar la cámara: " + ex.getMessage());
+            return;
+        }
         btnIniciar.setEnabled(false);
         lblEstado.setText("Cámara activa.");
     }
