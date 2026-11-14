@@ -28,6 +28,7 @@ public class VentanaAdmin extends JFrame {
 
     public VentanaAdmin() {
         initComponents();
+        cargarMaterias();
         cargarEstudiantes();
         actualizarTextoDias();
     }
@@ -71,6 +72,28 @@ public class VentanaAdmin extends JFrame {
         return archivo;
     }
 
+    private void crearMateria() {
+        String codigo = txtCodigoMateria.getText().trim();
+        String nombre = txtNombreMateria.getText().trim();
+        if (codigo.isEmpty() || nombre.isEmpty()) {
+            mostrarEstado("Código y nombre de materia son obligatorios.");
+            return;
+        }
+        if (!ValidadorHorarios.horariosValidos(horariosSeleccionados)) {
+            mostrarEstado("Configure al menos dos días con horarios válidos.");
+            return;
+        }
+        if (MateriaDAO.guardarMateria(codigo, nombre, horariosSeleccionados)) {
+            txtCodigoMateria.setText("");
+            txtNombreMateria.setText("");
+            cargarMaterias();
+            seleccionarMateria(codigo);
+            mostrarEstado("Materia y horarios guardados.");
+        } else {
+            mostrarEstado("No se pudo guardar la materia. " + MateriaDAO.getUltimoError());
+        }
+    }
+
     private void inscribirEstudiante() {
         EstudianteItem estudiante = (EstudianteItem) cmbEstudiantes.getSelectedItem();
         MateriaItem materia = (MateriaItem) cmbMaterias.getSelectedItem();
@@ -104,6 +127,23 @@ public class VentanaAdmin extends JFrame {
             texto.append(h.diaSemana(), 0, 3).append(' ').append(h.horaInicio()).append('-').append(h.horaFin());
         }
         lblDiasSeleccionados.setText(texto.toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void cargarMaterias() {
+        cmbMaterias.removeAllItems();
+        for (Object[] materia : MateriaDAO.cargarMaterias()) {
+            cmbMaterias.addItem(new MateriaItem(String.valueOf(materia[0]), String.valueOf(materia[1])));
+        }
+    }
+
+    private void seleccionarMateria(String codigo) {
+        for (int i = 0; i < cmbMaterias.getItemCount(); i++) {
+            if (((MateriaItem) cmbMaterias.getItemAt(i)).codigo.equals(codigo)) {
+                cmbMaterias.setSelectedIndex(i);
+                return;
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -416,7 +456,7 @@ public class VentanaAdmin extends JFrame {
     }//GEN-LAST:event_btnAbrirQRActionPerformed
 
     private void btnCrearMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearMateriaActionPerformed
-        // TODO add your handling code here:
+        crearMateria();
     }//GEN-LAST:event_btnCrearMateriaActionPerformed
 
     private void btnInscribirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInscribirActionPerformed
