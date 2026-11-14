@@ -2,6 +2,8 @@ package proyecto_visuales;
 
 import com.github.sarxos.webcam.Webcam;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JFrame;
 
@@ -14,6 +16,12 @@ public class VentanaPrincipal extends JFrame {
     public VentanaPrincipal() {
         initComponents();
         btnDetener.setEnabled(false);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                detenerCamara();
+            }
+        });
     }
 
     private void iniciarCamara() {
