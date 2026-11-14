@@ -2,12 +2,21 @@ package proyecto_visuales;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.ChecksumException;
+import com.google.zxing.FormatException;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 /** Ventana principal del control de asistencia mediante QR. */
 public class VentanaPrincipal extends JFrame {
@@ -15,6 +24,7 @@ public class VentanaPrincipal extends JFrame {
 
     private Webcam webcam;
     private WebcamPanel webcamPanel;
+    private volatile boolean escaneando;
 
     public VentanaPrincipal() {
         initComponents();
@@ -50,7 +60,11 @@ public class VentanaPrincipal extends JFrame {
         webcamPanel.start();
         btnIniciar.setEnabled(false);
         btnDetener.setEnabled(true);
-        lblEstado.setText("Cámara activa.");
+        escaneando = true;
+        lblEstado.setText("Cámara activa; esperando QR...");
+        Thread lector = new Thread(this::leerQR, "lector-qr");
+        lector.setDaemon(true);
+        lector.start();
     }
 
     private void abrirCamara() {
@@ -63,6 +77,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void detenerCamara() {
+        escaneando = false;
         if (webcamPanel != null) {
             webcamPanel.stop();
             panelCamara.removeAll();
@@ -75,6 +90,34 @@ public class VentanaPrincipal extends JFrame {
         btnIniciar.setEnabled(true);
         btnDetener.setEnabled(false);
         lblEstado.setText("Cámara detenida.");
+    }
+
+    private void leerQR() {
+        while (escaneando) {
+            BufferedImage imagen = webcam == null ? null : webcam.getImage();
+            String texto = decodificarQR(imagen);
+            if (texto != null) {
+                SwingUtilities.invokeLater(() -> txtMatricula.setText(texto));
+            }
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    }
+
+    static String decodificarQR(BufferedImage imagen) {
+        if (imagen == null) {
+            return null;
+        }
+        try {
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(imagen)));
+            return new QRCodeReader().decode(bitmap).getText();
+        } catch (NotFoundException | ChecksumException | FormatException ex) {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
