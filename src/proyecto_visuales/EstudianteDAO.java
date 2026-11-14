@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,8 @@ public class EstudianteDAO {
         est.setMatricula(rs.getString("matricula"));
         est.setNombre(rs.getString("nombre"));
         est.setApellido(rs.getString("apellido"));
-        est.setEmail(rs.getString("email"));
+        String email = rs.getString("email");
+        est.setEmail(email == null ? "" : email);
         return est;
     }
 
@@ -80,7 +82,7 @@ public class EstudianteDAO {
             pst.setString(1, estudiante.getMatricula().trim());
             pst.setString(2, estudiante.getNombre().trim());
             pst.setString(3, estudiante.getApellido().trim());
-            pst.setString(4, estudiante.getEmail());
+            asignarEmail(pst, 4, estudiante.getEmail());
             return pst.executeUpdate() > 0;
         } catch (SQLException ex) {
             if (ex.getErrorCode() == 1062) {
@@ -104,7 +106,7 @@ public class EstudianteDAO {
             PreparedStatement pst = cc.prepareStatement(sql);
             pst.setString(1, est.getNombre().trim());
             pst.setString(2, est.getApellido().trim());
-            pst.setString(3, est.getEmail());
+            asignarEmail(pst, 3, est.getEmail());
             pst.setString(4, est.getMatricula());
             int n = pst.executeUpdate();
             if (n == 0) {
@@ -135,5 +137,13 @@ public class EstudianteDAO {
 
     private static boolean vacio(String texto) {
         return texto == null || texto.trim().isEmpty();
+    }
+
+    private static void asignarEmail(PreparedStatement pst, int indice, String email) throws SQLException {
+        if (vacio(email)) {
+            pst.setNull(indice, Types.VARCHAR);
+        } else {
+            pst.setString(indice, email.trim());
+        }
     }
 }
