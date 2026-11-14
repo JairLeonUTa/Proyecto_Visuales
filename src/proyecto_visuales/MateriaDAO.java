@@ -45,7 +45,7 @@ public class MateriaDAO {
                 throw ex;
             }
         } catch (SQLException ex) {
-            ultimoError = "Error al guardar la materia: " + ex.getMessage();
+            ultimoError = mensajeError("guardar la materia", ex);
             return false;
         }
     }
@@ -146,8 +146,18 @@ public class MateriaDAO {
                 }
             }
         } catch (SQLException ex) {
-            ultimoError = "Error al consultar el horario: " + ex.getMessage();
+            ultimoError = mensajeError("consultar el horario", ex);
         }
         return lista;
+    }
+
+    /** Explica cómo resolver el error cuando la base todavía no tiene horarios_materia. */
+    private static String mensajeError(String accion, SQLException ex) {
+        String detalle = ex.getMessage() == null ? "" : ex.getMessage();
+        if (ex.getErrorCode() == 1146 && detalle.contains("horarios_materia")) {
+            return "Falta la tabla horarios_materia en la base 'proyecto'. "
+                    + "Ejecute database/migration_horarios_multiples_dias.sql en phpMyAdmin.";
+        }
+        return "Error al " + accion + ": " + detalle;
     }
 }
