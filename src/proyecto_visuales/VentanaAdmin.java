@@ -28,6 +28,7 @@ public class VentanaAdmin extends JFrame {
 
     public VentanaAdmin() {
         initComponents();
+        cargarEstudiantes();
         actualizarTextoDias();
     }
 
@@ -44,6 +45,8 @@ public class VentanaAdmin extends JFrame {
             mostrarEstado("No se creó el estudiante. " + EstudianteDAO.getUltimoError());
             return;
         }
+        cargarEstudiantes();
+        seleccionarEstudiante(matricula);
         try {
             File archivo = generarQR(matricula);
             lblQr.setText("");
@@ -68,6 +71,16 @@ public class VentanaAdmin extends JFrame {
         return archivo;
     }
 
+    private void inscribirEstudiante() {
+        EstudianteItem estudiante = (EstudianteItem) cmbEstudiantes.getSelectedItem();
+        MateriaItem materia = (MateriaItem) cmbMaterias.getSelectedItem();
+        if (estudiante == null || materia == null) {
+            mostrarEstado("Seleccione un estudiante y una materia.");
+            return;
+        }
+        mostrarEstado("Seleccionado: " + estudiante + " en " + materia + ".");
+    }
+
     private void seleccionarDias() {
         List<HorarioMateria> nuevos = SelectorHorarios.seleccionar(this, horariosSeleccionados);
         if (nuevos != null) {
@@ -87,6 +100,24 @@ public class VentanaAdmin extends JFrame {
         lblDiasSeleccionados.setText(texto.toString());
     }
 
+    @SuppressWarnings("unchecked")
+    private void cargarEstudiantes() {
+        cmbEstudiantes.removeAllItems();
+        for (Estudiante estudiante : EstudianteDAO.cargarEstudiantes()) {
+            cmbEstudiantes.addItem(new EstudianteItem(estudiante.getMatricula(),
+                    estudiante.getNombre() + " " + estudiante.getApellido()));
+        }
+    }
+
+    private void seleccionarEstudiante(String matricula) {
+        for (int i = 0; i < cmbEstudiantes.getItemCount(); i++) {
+            if (((EstudianteItem) cmbEstudiantes.getItemAt(i)).matricula.equals(matricula)) {
+                cmbEstudiantes.setSelectedIndex(i);
+                return;
+            }
+        }
+    }
+
     private void abrirCarpetaQR() {
         try {
             Path carpeta = Paths.get("qrs");
@@ -103,6 +134,38 @@ public class VentanaAdmin extends JFrame {
 
     private void mostrarEstado(String mensaje) {
         lblEstado.setText(mensaje);
+    }
+
+    /** Elemento del combo de materias: muestra "código - nombre". */
+    public static final class MateriaItem {
+        private final String codigo;
+        private final String nombre;
+
+        public MateriaItem(String codigo, String nombre) {
+            this.codigo = codigo;
+            this.nombre = nombre;
+        }
+
+        @Override
+        public String toString() {
+            return codigo + " - " + nombre;
+        }
+    }
+
+    /** Elemento del combo de estudiantes: muestra "matrícula - nombre". */
+    public static final class EstudianteItem {
+        private final String matricula;
+        private final String nombre;
+
+        public EstudianteItem(String matricula, String nombre) {
+            this.matricula = matricula;
+            this.nombre = nombre;
+        }
+
+        @Override
+        public String toString() {
+            return matricula + " - " + nombre;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -351,7 +414,7 @@ public class VentanaAdmin extends JFrame {
     }//GEN-LAST:event_btnCrearMateriaActionPerformed
 
     private void btnInscribirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInscribirActionPerformed
-        // TODO add your handling code here:
+        inscribirEstudiante();
     }//GEN-LAST:event_btnInscribirActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
