@@ -118,6 +118,10 @@ public class RegistroDAO {
         return consultarRegistros("WHERE e.matricula = ? ", matricula, limite);
     }
 
+    public static List<Object[]> listarRegistrosPorFecha(String fecha, int limite) {
+        return consultarRegistros("WHERE r.fecha = ? ", fecha, limite);
+    }
+
     private static List<Object[]> consultarRegistros(String filtro, String valor, int limite) {
         ultimoError = "";
         List<Object[]> lista = new ArrayList<>();
