@@ -12,6 +12,8 @@ public class RegistroDAO {
 
     public static final int SEMANAS_POR_PARCIAL = 8;
 
+    public static final String[] COLUMNAS_REPORTE = {"Materia", "Asistencias", "Clases del parcial", "Porcentaje"};
+
     private static final String SELECT_REGISTROS =
             "SELECT r.id_registro, e.matricula, e.nombre, e.apellido, m.codigo, m.nombre AS materia, "
             + "r.fecha, r.hora_entrada, r.es_atraso FROM registros r "
@@ -195,5 +197,13 @@ public class RegistroDAO {
             ultimoError = "Error al calcular el porcentaje: " + ex.getMessage();
         }
         return lista;
+    }
+
+    public static List<Object[]> reporteAsistencia(String matricula) {
+        List<Object[]> filas = new ArrayList<>();
+        for (Object[] fila : porcentajePorEstudiante(matricula, SEMANAS_POR_PARCIAL)) {
+            filas.add(new Object[]{fila[0], fila[1], fila[2], String.format("%.0f%%", (Double) fila[3])});
+        }
+        return filas;
     }
 }
