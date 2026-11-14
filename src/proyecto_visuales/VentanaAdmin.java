@@ -78,7 +78,13 @@ public class VentanaAdmin extends JFrame {
             mostrarEstado("Seleccione un estudiante y una materia.");
             return;
         }
-        mostrarEstado("Seleccionado: " + estudiante + " en " + materia + ".");
+        if (InscripcionDAO.estaInscrito(estudiante.matricula, materia.codigo)) {
+            mostrarEstado(estudiante.nombre + " ya está inscrito en " + materia.nombre + ".");
+        } else if (InscripcionDAO.inscribir(estudiante.matricula, materia.codigo)) {
+            mostrarEstado(estudiante.nombre + " inscrito en " + materia.nombre + ".");
+        } else {
+            mostrarEstado("No se inscribió. " + InscripcionDAO.getUltimoError());
+        }
     }
 
     private void seleccionarDias() {

@@ -41,4 +41,32 @@ public class InscripcionDAO {
             return false;
         }
     }
+
+    /**
+     * Inscribe al estudiante en la materia. Devuelve false si alguno de los dos no
+     * existe o si ya estaba inscrito (no se duplican inscripciones).
+     */
+    public static boolean inscribir(String matricula, String codigoMateria) {
+        ultimoError = "";
+        String sql = "INSERT IGNORE INTO inscripciones(id_estudiante, id_materia) "
+                + "SELECT e.id_estudiante, m.id_materia FROM estudiantes e "
+                + "JOIN materias m WHERE e.matricula = ? AND m.codigo = ?";
+        Connection cc = new conexion().conectar();
+        if (cc == null) {
+            ultimoError = "No hay conexión con MySQL.";
+            return false;
+        }
+        try (cc; PreparedStatement ps = cc.prepareStatement(sql)) {
+            ps.setString(1, matricula);
+            ps.setString(2, codigoMateria);
+            if (ps.executeUpdate() > 0) {
+                return true;
+            }
+            ultimoError = "El estudiante ya estaba inscrito o la materia no existe.";
+            return false;
+        } catch (SQLException ex) {
+            ultimoError = "No se pudo inscribir: " + ex.getMessage();
+            return false;
+        }
+    }
 }
