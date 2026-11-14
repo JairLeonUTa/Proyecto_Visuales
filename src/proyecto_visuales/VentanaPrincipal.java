@@ -132,6 +132,7 @@ public class VentanaPrincipal extends JFrame {
             return;
         }
         txtMatricula.setText(matricula);
+        lblUltimoQR.setText("Último QR: " + matricula + " (" + LocalTime.now().format(HORA) + ")");
         long ahora = System.currentTimeMillis();
         if (matricula.equals(ultimaMatricula) && ahora - ultimaLectura < 2500) {
             return;
