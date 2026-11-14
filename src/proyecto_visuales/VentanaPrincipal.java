@@ -1,13 +1,33 @@
 package proyecto_visuales;
 
+import com.github.sarxos.webcam.Webcam;
+import java.awt.Dimension;
 import javax.swing.JFrame;
 
 /** Ventana principal del control de asistencia mediante QR. */
 public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
 
+    private Webcam webcam;
+
     public VentanaPrincipal() {
         initComponents();
+    }
+
+    private void iniciarCamara() {
+        webcam = Webcam.getWebcams().get(0);
+        abrirCamara();
+        btnIniciar.setEnabled(false);
+        lblEstado.setText("Cámara activa.");
+    }
+
+    private void abrirCamara() {
+        try {
+            webcam.setViewSize(new Dimension(1280, 720));
+        } catch (IllegalArgumentException ex) {
+            webcam.setViewSize(new Dimension(640, 480));
+        }
+        webcam.open();
     }
 
     @SuppressWarnings("unchecked")
@@ -185,7 +205,7 @@ public class VentanaPrincipal extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
-        // TODO add your handling code here:
+        iniciarCamara();
     }//GEN-LAST:event_btnIniciarActionPerformed
 
     private void btnDetenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetenerActionPerformed
