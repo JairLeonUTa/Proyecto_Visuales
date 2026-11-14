@@ -38,18 +38,24 @@ public final class SelectorHorarios {
             panel.add(inicios[i]);
             panel.add(fines[i]);
         }
-        int opcion = JOptionPane.showConfirmDialog(padre, panel,
-                "Seleccione días y configure su horario", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (opcion != JOptionPane.OK_OPTION) {
-            return null;
-        }
-        List<HorarioMateria> seleccion = new ArrayList<>();
-        for (int i = 0; i < dias.size(); i++) {
-            if (casillas[i].isSelected()) {
-                seleccion.add(new HorarioMateria(dias.get(i), inicios[i].getText().trim(), fines[i].getText().trim()));
+        while (true) {
+            int opcion = JOptionPane.showConfirmDialog(padre, panel,
+                    "Seleccione días y configure su horario", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (opcion != JOptionPane.OK_OPTION) {
+                return null;
             }
+            List<HorarioMateria> seleccion = new ArrayList<>();
+            for (int i = 0; i < dias.size(); i++) {
+                if (casillas[i].isSelected()) {
+                    seleccion.add(new HorarioMateria(dias.get(i), inicios[i].getText().trim(), fines[i].getText().trim()));
+                }
+            }
+            String error = validar(seleccion);
+            if (error == null) {
+                return seleccion;
+            }
+            JOptionPane.showMessageDialog(padre, error, "Horario no válido", JOptionPane.WARNING_MESSAGE);
         }
-        return seleccion;
     }
 
     /** Devuelve el horario ya configurado para ese día, o null si el día no estaba elegido. */
@@ -60,6 +66,20 @@ public final class SelectorHorarios {
         for (HorarioMateria h : horarios) {
             if (h != null && dia.equals(h.diaSemana())) {
                 return h;
+            }
+        }
+        return null;
+    }
+
+    /** Devuelve el motivo por el que la selección no sirve, o null si es válida. */
+    static String validar(List<HorarioMateria> seleccion) {
+        if (!ValidadorHorarios.diasValidos(seleccion.stream().map(HorarioMateria::diaSemana).toList())) {
+            return "Marque al menos dos días de lunes a viernes.";
+        }
+        for (HorarioMateria h : seleccion) {
+            if (!ValidadorHorarios.horarioValido(h.horaInicio(), h.horaFin())) {
+                return "Horario inválido el " + h.diaSemana()
+                        + ": use HH:mm y una hora de inicio anterior a la de fin.";
             }
         }
         return null;
