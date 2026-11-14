@@ -184,7 +184,7 @@ public class RegistroDAO {
                 while (rs.next()) {
                     int asistidas = rs.getInt("asistidas");
                     int clases = semanas * rs.getInt("dias");
-                    double porcentaje = Math.min(100.0, asistidas * 100.0 / clases);
+                    double porcentaje = clases == 0 ? 0.0 : Math.min(100.0, asistidas * 100.0 / clases);
                     lista.add(new Object[]{
                         rs.getString("codigo") + " - " + rs.getString("nombre"),
                         asistidas,
