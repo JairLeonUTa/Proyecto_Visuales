@@ -26,7 +26,16 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-/** Ventana principal del control de asistencia mediante QR. */
+/**
+ * Ventana principal del control de asistencia mediante QR.
+ * <p>
+ * Ejecución: abrir el proyecto en NetBeans, encender MySQL en XAMPP y ejecutar el
+ * proyecto (Run Project); esta clase es la principal. "Iniciar cámara" muestra la
+ * webcam y lee los QR generados en Administración; también se puede escribir la
+ * matrícula y pulsar "Registrar manual". La asistencia solo se guarda si el estudiante
+ * está inscrito en una materia que tiene clase en ese día y hora; llegar después de la
+ * hora de inicio se marca como atraso.
+ */
 public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
@@ -60,6 +69,7 @@ public class VentanaPrincipal extends JFrame {
         refrescarPorcentaje();
     }
 
+    /** Abre la primera webcam disponible y, si se puede, empieza a buscar QR en sus imágenes. */
     private void iniciarCamara() {
         List<Webcam> camaras = Webcam.getWebcams();
         if (camaras.isEmpty()) {
@@ -98,6 +108,7 @@ public class VentanaPrincipal extends JFrame {
         webcam.open();
     }
 
+    /** Detiene la lectura de QR, quita la vista previa y libera la webcam. */
     private void detenerCamara() {
         escaneando = false;
         if (webcamPanel != null) {
@@ -119,6 +130,7 @@ public class VentanaPrincipal extends JFrame {
         JOptionPane.showMessageDialog(this, mensaje, "Cámara web", JOptionPane.ERROR_MESSAGE);
     }
 
+    /** Hilo lector: cada 300 ms toma una imagen de la webcam y busca un QR en ella. */
     private void leerQR() {
         while (escaneando) {
             BufferedImage imagen = webcam == null ? null : webcam.getImage();
@@ -142,6 +154,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
+    /** Devuelve el texto del QR que aparece en la imagen, o null si no hay uno legible. */
     static String decodificarQR(BufferedImage imagen) {
         if (imagen == null) {
             return null;
@@ -154,6 +167,11 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
+    /**
+     * Registra la asistencia de la matrícula leída: el estudiante debe existir y tener
+     * clase en una materia inscrita en este momento. Ignora la misma lectura repetida
+     * durante 2,5 segundos para no registrar dos veces el mismo QR.
+     */
     private void procesarQR(String contenido) {
         String matricula = extraerMatricula(contenido);
         if (matricula.isEmpty()) {
@@ -237,6 +255,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
+    /** Muestra el porcentaje de asistencia del parcial (8 semanas) por materia y el global. */
     private void refrescarPorcentaje() {
         String matricula = txtMatricula.getText().trim();
         List<Object[]> filas = matricula.isEmpty()
