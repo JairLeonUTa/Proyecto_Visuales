@@ -191,6 +191,23 @@ public class VentanaPrincipal extends JFrame {
         return entrada.isAfter(inicio);
     }
 
+    private void mostrarHorario() {
+        String matricula = txtMatricula.getText().trim();
+        if (matricula.isEmpty()) {
+            lblEstado.setText("Escriba una matrícula para ver su horario activo.");
+            return;
+        }
+        String dia = LocalDate.now().getDayOfWeek().name();
+        String hora = LocalTime.now().format(HORA);
+        List<Object[]> materias = MateriaDAO.materiasEnHorario(matricula, dia, hora);
+        if (materias.isEmpty()) {
+            lblEstado.setText("Sin materia activa para " + matricula + " ahora (" + dia + " " + hora + ").");
+        } else {
+            Object[] m = materias.get(0);
+            lblEstado.setText("Materia activa: " + m[0] + " - " + m[1] + " (" + m[3] + " a " + m[4] + ")");
+        }
+    }
+
     private void actualizarVista() {
         cargarRegistros();
         refrescarPorcentaje();
@@ -413,7 +430,7 @@ public class VentanaPrincipal extends JFrame {
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnHorarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHorarioActionPerformed
-        // TODO add your handling code here:
+        mostrarHorario();
     }//GEN-LAST:event_btnHorarioActionPerformed
 
     private void btnRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefrescarActionPerformed
