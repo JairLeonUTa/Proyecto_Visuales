@@ -1,6 +1,8 @@
 package proyecto_visuales;
 
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamPanel;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -12,9 +14,11 @@ public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private Webcam webcam;
+    private WebcamPanel webcamPanel;
 
     public VentanaPrincipal() {
         initComponents();
+        panelCamara.setLayout(new BorderLayout());
         btnDetener.setEnabled(false);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -37,6 +41,13 @@ public class VentanaPrincipal extends JFrame {
             lblEstado.setText("No se pudo iniciar la cámara: " + ex.getMessage());
             return;
         }
+        webcamPanel = new WebcamPanel(webcam);
+        webcamPanel.setFPSDisplayed(false);
+        panelCamara.removeAll();
+        panelCamara.add(webcamPanel, BorderLayout.CENTER);
+        panelCamara.revalidate();
+        panelCamara.repaint();
+        webcamPanel.start();
         btnIniciar.setEnabled(false);
         btnDetener.setEnabled(true);
         lblEstado.setText("Cámara activa.");
@@ -52,6 +63,12 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void detenerCamara() {
+        if (webcamPanel != null) {
+            webcamPanel.stop();
+            panelCamara.removeAll();
+            panelCamara.repaint();
+            webcamPanel = null;
+        }
         if (webcam != null && webcam.isOpen()) {
             webcam.close();
         }
