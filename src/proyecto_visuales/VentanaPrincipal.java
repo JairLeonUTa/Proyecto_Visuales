@@ -13,6 +13,7 @@ public class VentanaPrincipal extends JFrame {
 
     public VentanaPrincipal() {
         initComponents();
+        btnDetener.setEnabled(false);
     }
 
     private void iniciarCamara() {
@@ -29,6 +30,7 @@ public class VentanaPrincipal extends JFrame {
             return;
         }
         btnIniciar.setEnabled(false);
+        btnDetener.setEnabled(true);
         lblEstado.setText("Cámara activa.");
     }
 
@@ -39,6 +41,15 @@ public class VentanaPrincipal extends JFrame {
             webcam.setViewSize(new Dimension(640, 480));
         }
         webcam.open();
+    }
+
+    private void detenerCamara() {
+        if (webcam != null && webcam.isOpen()) {
+            webcam.close();
+        }
+        btnIniciar.setEnabled(true);
+        btnDetener.setEnabled(false);
+        lblEstado.setText("Cámara detenida.");
     }
 
     @SuppressWarnings("unchecked")
@@ -220,7 +231,7 @@ public class VentanaPrincipal extends JFrame {
     }//GEN-LAST:event_btnIniciarActionPerformed
 
     private void btnDetenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetenerActionPerformed
-        // TODO add your handling code here:
+        detenerCamara();
     }//GEN-LAST:event_btnDetenerActionPerformed
 
     private void txtMatriculaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMatriculaActionPerformed
