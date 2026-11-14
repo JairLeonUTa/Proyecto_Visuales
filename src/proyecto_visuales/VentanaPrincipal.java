@@ -361,11 +361,11 @@ public class VentanaPrincipal extends JFrame {
     }//GEN-LAST:event_btnDetenerActionPerformed
 
     private void txtMatriculaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMatriculaActionPerformed
-        // TODO add your handling code here:
+        procesarQR(txtMatricula.getText());
     }//GEN-LAST:event_txtMatriculaActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        // TODO add your handling code here:
+        procesarQR(txtMatricula.getText());
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnHorarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHorarioActionPerformed
