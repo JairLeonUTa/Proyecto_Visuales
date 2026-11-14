@@ -34,9 +34,16 @@ public class MateriaDAO {
             return false;
         }
         try (cc) {
-            int idMateria = insertarMateria(cc, codigo, nombre, horarios.get(0));
-            insertarHorarios(cc, idMateria, horarios);
-            return true;
+            cc.setAutoCommit(false);
+            try {
+                int idMateria = insertarMateria(cc, codigo, nombre, horarios.get(0));
+                insertarHorarios(cc, idMateria, horarios);
+                cc.commit();
+                return true;
+            } catch (SQLException ex) {
+                cc.rollback();
+                throw ex;
+            }
         } catch (SQLException ex) {
             ultimoError = "Error al guardar la materia: " + ex.getMessage();
             return false;
