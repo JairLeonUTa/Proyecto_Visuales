@@ -155,4 +155,40 @@ public class RegistroDAO {
         }
         return lista;
     }
+
+    public static List<Object[]> porcentajePorEstudiante(String matricula, int semanasPorParcial) {
+        ultimoError = "";
+        List<Object[]> lista = new ArrayList<>();
+        String sql = "SELECT m.codigo, m.nombre, "
+                + "(SELECT COUNT(*) FROM horarios_materia h WHERE h.id_materia = m.id_materia) AS dias, "
+                + "(SELECT COUNT(*) FROM registros r WHERE r.id_materia = m.id_materia "
+                + "AND r.id_estudiante = e.id_estudiante) AS asistidas "
+                + "FROM inscripciones i JOIN estudiantes e ON e.id_estudiante = i.id_estudiante "
+                + "JOIN materias m ON m.id_materia = i.id_materia "
+                + "WHERE e.matricula = ? ORDER BY m.codigo";
+        Connection cc = new conexion().conectar();
+        if (cc == null) {
+            ultimoError = "No hay conexión con MySQL.";
+            return lista;
+        }
+        try (cc; PreparedStatement pst = cc.prepareStatement(sql)) {
+            pst.setString(1, matricula);
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    int asistidas = rs.getInt("asistidas");
+                    int clases = semanasPorParcial * rs.getInt("dias");
+                    double porcentaje = asistidas * 100.0 / clases;
+                    lista.add(new Object[]{
+                        rs.getString("codigo") + " - " + rs.getString("nombre"),
+                        asistidas,
+                        clases,
+                        porcentaje
+                    });
+                }
+            }
+        } catch (SQLException ex) {
+            ultimoError = "Error al calcular el porcentaje: " + ex.getMessage();
+        }
+        return lista;
+    }
 }
