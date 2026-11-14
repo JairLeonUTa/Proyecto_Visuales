@@ -30,9 +30,10 @@ public final class SelectorHorarios {
         panel.add(new JLabel("Desde (HH:mm)"));
         panel.add(new JLabel("Hasta (HH:mm)"));
         for (int i = 0; i < dias.size(); i++) {
-            casillas[i] = new JCheckBox(dias.get(i));
-            inicios[i] = new JTextField("08:00", 6);
-            fines[i] = new JTextField("10:00", 6);
+            HorarioMateria actual = buscar(actuales, dias.get(i));
+            casillas[i] = new JCheckBox(dias.get(i), actual != null);
+            inicios[i] = new JTextField(actual != null ? actual.horaInicio() : "08:00", 6);
+            fines[i] = new JTextField(actual != null ? actual.horaFin() : "10:00", 6);
             panel.add(casillas[i]);
             panel.add(inicios[i]);
             panel.add(fines[i]);
@@ -49,5 +50,18 @@ public final class SelectorHorarios {
             }
         }
         return seleccion;
+    }
+
+    /** Devuelve el horario ya configurado para ese día, o null si el día no estaba elegido. */
+    private static HorarioMateria buscar(List<HorarioMateria> horarios, String dia) {
+        if (horarios == null) {
+            return null;
+        }
+        for (HorarioMateria h : horarios) {
+            if (h != null && dia.equals(h.diaSemana())) {
+                return h;
+            }
+        }
+        return null;
     }
 }
