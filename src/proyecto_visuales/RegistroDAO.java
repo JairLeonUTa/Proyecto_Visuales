@@ -20,25 +20,33 @@ public class RegistroDAO {
     public static boolean guardarRegistro(String matricula, String codigoMateria, String fecha,
             String horaEntrada, boolean atraso) {
         ultimoError = "";
-        String sql = "INSERT INTO registros(id_estudiante, id_materia, fecha, hora_entrada, es_atraso) "
-                + "SELECT e.id_estudiante, m.id_materia, ?, ?, ? FROM estudiantes e "
-                + "JOIN materias m WHERE e.matricula = ? AND m.codigo = ?";
         try {
             Connection cc = new conexion().conectar();
-            if (obtenerIdEstudiante(cc, matricula) == -1) {
+            int idEst = obtenerIdEstudiante(cc, matricula);
+            if (idEst == -1) {
                 ultimoError = "Estudiante no registrado: " + matricula + ".";
                 return false;
             }
-            if (yaRegistrado(cc, matricula, codigoMateria, fecha)) {
+            int idMat = obtenerIdMateria(cc, codigoMateria);
+            if (idMat == -1) {
+                ultimoError = "La materia " + codigoMateria + " no existe.";
+                return false;
+            }
+            if (!estaInscrito(cc, idEst, idMat)) {
+                ultimoError = "El estudiante " + matricula + " no está inscrito en " + codigoMateria + ".";
+                return false;
+            }
+            if (yaRegistrado(cc, idEst, idMat, fecha)) {
                 ultimoError = "Ya registró asistencia hoy en " + codigoMateria + ".";
                 return false;
             }
-            PreparedStatement pst = cc.prepareStatement(sql);
-            pst.setString(1, fecha);
-            pst.setString(2, horaEntrada);
-            pst.setInt(3, atraso ? 1 : 0);
-            pst.setString(4, matricula);
-            pst.setString(5, codigoMateria);
+            PreparedStatement pst = cc.prepareStatement(
+                    "INSERT INTO registros(id_estudiante, id_materia, fecha, hora_entrada, es_atraso) VALUES (?,?,?,?,?)");
+            pst.setInt(1, idEst);
+            pst.setInt(2, idMat);
+            pst.setString(3, fecha);
+            pst.setString(4, horaEntrada);
+            pst.setInt(5, atraso ? 1 : 0);
             return pst.executeUpdate() > 0;
         } catch (SQLException ex) {
             ultimoError = ex.getErrorCode() == 1062
@@ -48,14 +56,11 @@ public class RegistroDAO {
         }
     }
 
-    private static boolean yaRegistrado(Connection cc, String matricula, String codigoMateria, String fecha)
-            throws SQLException {
+    private static boolean yaRegistrado(Connection cc, int idEst, int idMat, String fecha) throws SQLException {
         try (PreparedStatement ps = cc.prepareStatement(
-                "SELECT 1 FROM registros r JOIN estudiantes e ON e.id_estudiante = r.id_estudiante "
-                + "JOIN materias m ON m.id_materia = r.id_materia "
-                + "WHERE e.matricula = ? AND m.codigo = ? AND r.fecha = ? LIMIT 1")) {
-            ps.setString(1, matricula);
-            ps.setString(2, codigoMateria);
+                "SELECT 1 FROM registros WHERE id_estudiante = ? AND id_materia = ? AND fecha = ? LIMIT 1")) {
+            ps.setInt(1, idEst);
+            ps.setInt(2, idMat);
             ps.setString(3, fecha);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
@@ -68,6 +73,26 @@ public class RegistroDAO {
             ps.setString(1, matricula);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getInt(1) : -1;
+            }
+        }
+    }
+
+    private static int obtenerIdMateria(Connection cc, String codigo) throws SQLException {
+        try (PreparedStatement ps = cc.prepareStatement("SELECT id_materia FROM materias WHERE codigo = ?")) {
+            ps.setString(1, codigo);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : -1;
+            }
+        }
+    }
+
+    private static boolean estaInscrito(Connection cc, int idEst, int idMat) throws SQLException {
+        try (PreparedStatement ps = cc.prepareStatement(
+                "SELECT 1 FROM inscripciones WHERE id_estudiante = ? AND id_materia = ?")) {
+            ps.setInt(1, idEst);
+            ps.setInt(2, idMat);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
             }
         }
     }
