@@ -7,11 +7,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Acceso a la tabla registros (asistencias). */
+/**
+ * Asistencias: registra la entrada de un estudiante a una materia (una sola vez por
+ * día), lista los registros para la tabla de la ventana y calcula el porcentaje de
+ * asistencia del parcial de ocho semanas. No muestra ventanas: si algo falla, el motivo
+ * queda en {@link #getUltimoError()}.
+ */
 public class RegistroDAO {
 
+    /** Duración de cada parcial en semanas. */
     public static final int SEMANAS_POR_PARCIAL = 8;
 
+    /** Columnas de las filas que devuelve {@link #reporteAsistencia(String)}. */
     public static final String[] COLUMNAS_REPORTE = {"Materia", "Asistencias", "Clases del parcial", "Porcentaje"};
 
     private static final String SELECT_REGISTROS =
@@ -25,10 +32,18 @@ public class RegistroDAO {
     private RegistroDAO() {
     }
 
+    /** Mensaje del último fallo; queda vacío cuando la operación termina bien. */
     public static String getUltimoError() {
         return ultimoError;
     }
 
+    /**
+     * Registra la asistencia. Verifica que el estudiante exista, que esté inscrito en la
+     * materia y que no haya marcado ya ese día.
+     * @param fecha fecha en formato yyyy-MM-dd
+     * @param horaEntrada hora de llegada HH:mm
+     * @param atraso true si llegó después de la hora de inicio de la clase
+     */
     public static boolean guardarRegistro(String matricula, String codigoMateria, String fecha,
             String horaEntrada, boolean atraso) {
         ultimoError = "";
@@ -114,14 +129,20 @@ public class RegistroDAO {
         }
     }
 
+    /**
+     * Últimos registros, del más reciente al más antiguo, como filas para la tabla:
+     * {#, matrícula, estudiante, materia, fecha, hora, atraso}.
+     */
     public static List<Object[]> listarRegistros(int limite) {
         return consultarRegistros("", null, limite);
     }
 
+    /** Registros de un solo estudiante, con las mismas columnas que {@link #listarRegistros(int)}. */
     public static List<Object[]> listarRegistrosPorMatricula(String matricula, int limite) {
         return consultarRegistros("WHERE e.matricula = ? ", matricula, limite);
     }
 
+    /** Registros de una fecha (yyyy-MM-dd), con las mismas columnas que {@link #listarRegistros(int)}. */
     public static List<Object[]> listarRegistrosPorFecha(String fecha, int limite) {
         return consultarRegistros("WHERE r.fecha = ? ", fecha, limite);
     }
@@ -160,6 +181,11 @@ public class RegistroDAO {
         return lista;
     }
 
+    /**
+     * Porcentaje de asistencia del estudiante en cada materia inscrita, considerando
+     * el parcial actual (máximo ocho semanas). Clases del parcial = semanas x días de
+     * clase por semana de la materia. Filas {materia, asistencias, clases, porcentaje}.
+     */
     public static List<Object[]> porcentajePorEstudiante(String matricula, int semanasPorParcial) {
         ultimoError = "";
         List<Object[]> lista = new ArrayList<>();
@@ -199,6 +225,7 @@ public class RegistroDAO {
         return lista;
     }
 
+    /** Filas listas para una JTable con {@link #COLUMNAS_REPORTE}; el porcentaje va formateado. */
     public static List<Object[]> reporteAsistencia(String matricula) {
         List<Object[]> filas = new ArrayList<>();
         for (Object[] fila : porcentajePorEstudiante(matricula, SEMANAS_POR_PARCIAL)) {
