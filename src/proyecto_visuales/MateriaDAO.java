@@ -110,4 +110,44 @@ public class MateriaDAO {
         }
         return lista;
     }
+
+    /**
+     * Materias en las que el estudiante está inscrito y que tienen clase en ese día y hora.
+     * Filas {código, nombre, día, inicio, fin}; vacía si no tiene clase en ese momento.
+     */
+    public static List<Object[]> materiasEnHorario(String matricula, String diaSemana, String ahoraHHmm) {
+        ultimoError = "";
+        List<Object[]> lista = new ArrayList<>();
+        String sql = "SELECT m.codigo, m.nombre, h.dia_semana, h.hora_inicio, h.hora_fin "
+                + "FROM materias m JOIN horarios_materia h ON h.id_materia = m.id_materia "
+                + "JOIN inscripciones i ON i.id_materia = m.id_materia "
+                + "JOIN estudiantes e ON e.id_estudiante = i.id_estudiante "
+                + "WHERE e.matricula = ? AND h.dia_semana = ? AND h.hora_inicio <= ? AND h.hora_fin >= ? "
+                + "ORDER BY h.hora_inicio";
+        Connection cc = new conexion().conectar();
+        if (cc == null) {
+            ultimoError = "No hay conexión con MySQL.";
+            return lista;
+        }
+        try (cc; PreparedStatement pst = cc.prepareStatement(sql)) {
+            pst.setString(1, matricula);
+            pst.setString(2, diaSemana);
+            pst.setString(3, ahoraHHmm + ":00");
+            pst.setString(4, ahoraHHmm + ":00");
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new Object[]{
+                        rs.getString("codigo"),
+                        rs.getString("nombre"),
+                        rs.getString("dia_semana"),
+                        rs.getString("hora_inicio"),
+                        rs.getString("hora_fin")
+                    });
+                }
+            }
+        } catch (SQLException ex) {
+            ultimoError = "Error al consultar el horario: " + ex.getMessage();
+        }
+        return lista;
+    }
 }
