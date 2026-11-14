@@ -52,6 +52,7 @@ public class VentanaPrincipal extends JFrame {
             }
         });
         cargarRegistros();
+        refrescarPorcentaje();
     }
 
     private void iniciarCamara() {
@@ -192,6 +193,7 @@ public class VentanaPrincipal extends JFrame {
 
     private void actualizarVista() {
         cargarRegistros();
+        refrescarPorcentaje();
     }
 
     private void cargarRegistros() {
@@ -199,6 +201,25 @@ public class VentanaPrincipal extends JFrame {
         for (Object[] registro : RegistroDAO.listarRegistros(200)) {
             modeloTabla.addRow(registro);
         }
+    }
+
+    private void refrescarPorcentaje() {
+        String matricula = txtMatricula.getText().trim();
+        List<Object[]> filas = matricula.isEmpty()
+                ? List.of() : RegistroDAO.porcentajePorEstudiante(matricula, RegistroDAO.SEMANAS_POR_PARCIAL);
+        if (filas.isEmpty()) {
+            lblPorcentaje.setText("Porcentaje: --");
+            return;
+        }
+        double suma = 0;
+        StringBuilder texto = new StringBuilder("Porcentaje: ");
+        for (Object[] fila : filas) {
+            double porcentaje = ((Number) fila[3]).doubleValue();
+            suma += porcentaje;
+            texto.append(fila[0]).append(' ').append(String.format("%.0f%%", porcentaje)).append("  ");
+        }
+        texto.append("| Global: ").append(String.format("%.0f%%", suma / filas.size()));
+        lblPorcentaje.setText(texto.toString());
     }
 
     @SuppressWarnings("unchecked")
