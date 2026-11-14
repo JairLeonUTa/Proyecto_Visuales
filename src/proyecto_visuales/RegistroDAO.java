@@ -25,7 +25,7 @@ public class RegistroDAO {
             ultimoError = "No hay conexión con MySQL. Verifique que XAMPP esté encendido.";
             return false;
         }
-        try {
+        try (cc) {
             int idEst = obtenerIdEstudiante(cc, matricula);
             if (idEst == -1) {
                 ultimoError = "Estudiante no registrado: " + matricula + ".";
@@ -44,14 +44,15 @@ public class RegistroDAO {
                 ultimoError = "Ya registró asistencia hoy en " + codigoMateria + ".";
                 return false;
             }
-            PreparedStatement pst = cc.prepareStatement(
-                    "INSERT INTO registros(id_estudiante, id_materia, fecha, hora_entrada, es_atraso) VALUES (?,?,?,?,?)");
-            pst.setInt(1, idEst);
-            pst.setInt(2, idMat);
-            pst.setString(3, fecha);
-            pst.setString(4, horaEntrada);
-            pst.setInt(5, atraso ? 1 : 0);
-            return pst.executeUpdate() > 0;
+            try (PreparedStatement pst = cc.prepareStatement(
+                    "INSERT INTO registros(id_estudiante, id_materia, fecha, hora_entrada, es_atraso) VALUES (?,?,?,?,?)")) {
+                pst.setInt(1, idEst);
+                pst.setInt(2, idMat);
+                pst.setString(3, fecha);
+                pst.setString(4, horaEntrada);
+                pst.setInt(5, atraso ? 1 : 0);
+                return pst.executeUpdate() > 0;
+            }
         } catch (SQLException ex) {
             ultimoError = ex.getErrorCode() == 1062
                     ? "Ya registró asistencia hoy en " + codigoMateria + "."
