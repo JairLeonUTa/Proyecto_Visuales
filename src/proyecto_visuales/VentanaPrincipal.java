@@ -14,6 +14,9 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -21,10 +24,13 @@ import javax.swing.SwingUtilities;
 /** Ventana principal del control de asistencia mediante QR. */
 public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
+    private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
 
     private Webcam webcam;
     private WebcamPanel webcamPanel;
     private volatile boolean escaneando;
+    private String ultimaMatricula = "";
+    private long ultimaLectura;
 
     public VentanaPrincipal() {
         initComponents();
@@ -97,7 +103,7 @@ public class VentanaPrincipal extends JFrame {
             BufferedImage imagen = webcam == null ? null : webcam.getImage();
             String texto = decodificarQR(imagen);
             if (texto != null) {
-                SwingUtilities.invokeLater(() -> txtMatricula.setText(texto));
+                SwingUtilities.invokeLater(() -> procesarQR(texto));
             }
             try {
                 Thread.sleep(300);
@@ -118,6 +124,58 @@ public class VentanaPrincipal extends JFrame {
         } catch (NotFoundException | ChecksumException | FormatException ex) {
             return null;
         }
+    }
+
+    private void procesarQR(String contenido) {
+        String matricula = extraerMatricula(contenido);
+        if (matricula.isEmpty()) {
+            return;
+        }
+        txtMatricula.setText(matricula);
+        long ahora = System.currentTimeMillis();
+        if (matricula.equals(ultimaMatricula) && ahora - ultimaLectura < 2500) {
+            return;
+        }
+        ultimaMatricula = matricula;
+        ultimaLectura = ahora;
+
+        Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
+        if (estudiante == null) {
+            lblEstado.setText("Estudiante no registrado: " + matricula);
+            return;
+        }
+        LocalDate hoy = LocalDate.now();
+        String hora = LocalTime.now().format(HORA);
+        List<Object[]> materias = MateriaDAO.materiasEnHorario(matricula, hoy.getDayOfWeek().name(), hora);
+        if (materias.isEmpty()) {
+            lblEstado.setText("Fuera de horario: " + estudiante.getNombre() + " no tiene clase ahora ("
+                    + hoy.getDayOfWeek() + " " + hora + ").");
+            return;
+        }
+        Object[] materia = materias.get(0);
+        String codigo = String.valueOf(materia[0]);
+        boolean atraso = esAtraso(hora, String.valueOf(materia[3]));
+        if (RegistroDAO.guardarRegistro(matricula, codigo, hoy.toString(), hora, atraso)) {
+            lblEstado.setText("Asistencia registrada: " + estudiante.getNombre() + " " + estudiante.getApellido()
+                    + " - " + codigo + (atraso ? " (atraso)" : ""));
+        } else {
+            lblEstado.setText("No se registró: " + RegistroDAO.getUltimoError());
+        }
+    }
+
+    /** El QR contiene la matrícula; si trae más datos separados por "|", se usa solo el primero. */
+    static String extraerMatricula(String contenido) {
+        if (contenido == null) {
+            return "";
+        }
+        return contenido.trim().split("\\|", 2)[0].trim();
+    }
+
+    /** Hay atraso cuando la hora de entrada es posterior a la hora de inicio de la clase. */
+    static boolean esAtraso(String horaEntrada, String horaInicio) {
+        LocalTime entrada = LocalTime.parse(horaEntrada.substring(0, 5));
+        LocalTime inicio = LocalTime.parse(horaInicio.substring(0, 5));
+        return entrada.isAfter(inicio);
     }
 
     @SuppressWarnings("unchecked")
