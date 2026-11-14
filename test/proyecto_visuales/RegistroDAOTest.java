@@ -19,6 +19,7 @@ public class RegistroDAOTest {
             probarRechazoDuplicado();
             probarListado();
             probarPorcentajeSinRegistros();
+            probarFlujoCompleto();
         } finally {
             limpiar();
         }
@@ -53,6 +54,22 @@ public class RegistroDAOTest {
         verificar(filas.size() == 1, "hay una fila por materia inscrita");
         verificar(((Number) filas.get(0)[1]).intValue() == 0, "sin registros no hay asistencias");
         verificar(((Number) filas.get(0)[3]).doubleValue() == 0.0, "sin registros el porcentaje es 0");
+    }
+
+    static void probarFlujoCompleto() {
+        reiniciar();
+        String hoy = LocalDate.now().toString();
+        verificar(RegistroDAO.guardarRegistro(MATRICULA, MATERIA, hoy, "08:20", true), "registrar asistencia");
+        verificar(!RegistroDAO.guardarRegistro("TEST-NADIE", MATERIA, hoy, "08:20", false),
+                "no registra a un estudiante inexistente");
+        verificar(RegistroDAO.listarRegistrosPorMatricula(MATRICULA, 10).size() == 1, "filtra por matrícula");
+        verificar(RegistroDAO.listarRegistrosPorFecha(hoy, 500).stream().anyMatch(f -> MATRICULA.equals(f[1])),
+                "filtra por fecha");
+        Object[] porcentaje = RegistroDAO.porcentajePorEstudiante(MATRICULA, 8).get(0);
+        verificar(((Number) porcentaje[1]).intValue() == 1, "cuenta la asistencia en el parcial");
+        verificar(((Number) porcentaje[2]).intValue() == 16, "8 semanas x 2 días = 16 clases");
+        verificar(Math.abs(((Number) porcentaje[3]).doubleValue() - 6.25) < 0.001, "1 de 16 clases = 6.25%");
+        verificar("6%".equals(RegistroDAO.reporteAsistencia(MATRICULA).get(0)[3]), "el reporte formatea el porcentaje");
     }
 
     /** Deja un estudiante inscrito en una materia de dos días y sin registros. */
