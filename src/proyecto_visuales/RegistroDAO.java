@@ -4,9 +4,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Acceso a la tabla registros (asistencias). */
 public class RegistroDAO {
+
+    private static final String SELECT_REGISTROS =
+            "SELECT r.id_registro, e.matricula, e.nombre, e.apellido, m.codigo, m.nombre AS materia, "
+            + "r.fecha, r.hora_entrada, r.es_atraso FROM registros r "
+            + "JOIN estudiantes e ON e.id_estudiante = r.id_estudiante "
+            + "JOIN materias m ON m.id_materia = r.id_materia ";
 
     private static String ultimoError = "";
 
@@ -100,5 +108,43 @@ public class RegistroDAO {
                 return rs.next();
             }
         }
+    }
+
+    public static List<Object[]> listarRegistros(int limite) {
+        return consultarRegistros("", null, limite);
+    }
+
+    private static List<Object[]> consultarRegistros(String filtro, String valor, int limite) {
+        ultimoError = "";
+        List<Object[]> lista = new ArrayList<>();
+        Connection cc = new conexion().conectar();
+        if (cc == null) {
+            ultimoError = "No hay conexión con MySQL.";
+            return lista;
+        }
+        String sql = SELECT_REGISTROS + filtro + "ORDER BY r.id_registro DESC LIMIT ?";
+        try (cc; PreparedStatement pst = cc.prepareStatement(sql)) {
+            int i = 1;
+            if (valor != null) {
+                pst.setString(i++, valor);
+            }
+            pst.setInt(i, limite);
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new Object[]{
+                        rs.getInt("id_registro"),
+                        rs.getString("matricula"),
+                        rs.getString("nombre") + " " + rs.getString("apellido"),
+                        rs.getString("codigo") + " - " + rs.getString("materia"),
+                        rs.getString("fecha"),
+                        rs.getString("hora_entrada"),
+                        rs.getInt("es_atraso") == 1 ? "Sí" : "No"
+                    });
+                }
+            }
+        } catch (SQLException ex) {
+            ultimoError = "Error al listar registros: " + ex.getMessage();
+        }
+        return lista;
     }
 }
