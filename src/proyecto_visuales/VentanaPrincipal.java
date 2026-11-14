@@ -20,20 +20,29 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 /** Ventana principal del control de asistencia mediante QR. */
 public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
+    static final Object[] COLUMNAS = {"#", "Matrícula", "Estudiante", "Materia", "Fecha", "Hora", "Atraso"};
 
     private Webcam webcam;
     private WebcamPanel webcamPanel;
     private volatile boolean escaneando;
     private String ultimaMatricula = "";
     private long ultimaLectura;
+    private final DefaultTableModel modeloTabla = new DefaultTableModel(COLUMNAS, 0) {
+        @Override
+        public boolean isCellEditable(int fila, int columna) {
+            return false;
+        }
+    };
 
     public VentanaPrincipal() {
         initComponents();
+        tabla.setModel(modeloTabla);
         panelCamara.setLayout(new BorderLayout());
         btnDetener.setEnabled(false);
         addWindowListener(new WindowAdapter() {
@@ -42,6 +51,7 @@ public class VentanaPrincipal extends JFrame {
                 detenerCamara();
             }
         });
+        cargarRegistros();
     }
 
     private void iniciarCamara() {
@@ -162,6 +172,7 @@ public class VentanaPrincipal extends JFrame {
         } else {
             lblEstado.setText("No se registró: " + RegistroDAO.getUltimoError());
         }
+        actualizarVista();
     }
 
     /** El QR contiene la matrícula; si trae más datos separados por "|", se usa solo el primero. */
@@ -177,6 +188,17 @@ public class VentanaPrincipal extends JFrame {
         LocalTime entrada = LocalTime.parse(horaEntrada.substring(0, 5));
         LocalTime inicio = LocalTime.parse(horaInicio.substring(0, 5));
         return entrada.isAfter(inicio);
+    }
+
+    private void actualizarVista() {
+        cargarRegistros();
+    }
+
+    private void cargarRegistros() {
+        modeloTabla.setRowCount(0);
+        for (Object[] registro : RegistroDAO.listarRegistros(200)) {
+            modeloTabla.addRow(registro);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -374,7 +396,7 @@ public class VentanaPrincipal extends JFrame {
     }//GEN-LAST:event_btnHorarioActionPerformed
 
     private void btnRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefrescarActionPerformed
-        // TODO add your handling code here:
+        actualizarVista();
     }//GEN-LAST:event_btnRefrescarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
