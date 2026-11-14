@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -62,14 +63,14 @@ public class VentanaPrincipal extends JFrame {
     private void iniciarCamara() {
         List<Webcam> camaras = Webcam.getWebcams();
         if (camaras.isEmpty()) {
-            lblEstado.setText("No se detectó ninguna cámara web conectada.");
+            mostrarErrorCamara("No se detectó ninguna cámara web conectada.");
             return;
         }
         webcam = camaras.get(0);
         try {
             abrirCamara();
         } catch (RuntimeException ex) {
-            lblEstado.setText("No se pudo iniciar la cámara: " + ex.getMessage());
+            mostrarErrorCamara("No se pudo iniciar la cámara: " + ex.getMessage());
             return;
         }
         webcamPanel = new WebcamPanel(webcam);
@@ -113,9 +114,21 @@ public class VentanaPrincipal extends JFrame {
         lblEstado.setText("Cámara detenida.");
     }
 
+    private void mostrarErrorCamara(String mensaje) {
+        lblEstado.setText(mensaje);
+        JOptionPane.showMessageDialog(this, mensaje, "Cámara web", JOptionPane.ERROR_MESSAGE);
+    }
+
     private void leerQR() {
         while (escaneando) {
             BufferedImage imagen = webcam == null ? null : webcam.getImage();
+            if (imagen == null && escaneando) {
+                SwingUtilities.invokeLater(() -> {
+                    detenerCamara();
+                    mostrarErrorCamara("La cámara dejó de enviar imágenes. Revise que no la use otra aplicación.");
+                });
+                return;
+            }
             String texto = decodificarQR(imagen);
             if (texto != null) {
                 SwingUtilities.invokeLater(() -> procesarQR(texto));
