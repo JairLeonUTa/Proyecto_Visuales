@@ -218,11 +218,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Crear estudiante y generar QR"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCrearEstudianteActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnAbrirQR">
       <Properties>
         <Property name="text" type="java.lang.String" value="Abrir carpeta de QR"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAbrirQRActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblHorario">
       <Properties>
@@ -252,6 +258,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Seleccionar d&#xed;as..."/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSeleccionarDiasActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblDiasSeleccionados">
       <Properties>
@@ -262,6 +271,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Crear materia y horario"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCrearMateriaActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblInscripcion">
       <Properties>
@@ -286,6 +298,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Inscribir estudiante"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInscribirActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblEstado">
       <Properties>

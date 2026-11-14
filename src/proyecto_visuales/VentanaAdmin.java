@@ -68,6 +68,14 @@ public class VentanaAdmin extends JFrame {
         return archivo;
     }
 
+    private void seleccionarDias() {
+        List<HorarioMateria> nuevos = SelectorHorarios.seleccionar(this, horariosSeleccionados);
+        if (nuevos != null) {
+            horariosSeleccionados = nuevos;
+            actualizarTextoDias();
+        }
+    }
+
     private void actualizarTextoDias() {
         StringBuilder texto = new StringBuilder();
         for (HorarioMateria h : horariosSeleccionados) {
@@ -151,8 +159,18 @@ public class VentanaAdmin extends JFrame {
         lblQr.setBorder(javax.swing.BorderFactory.createTitledBorder("QR del estudiante"));
 
         btnCrearEstudiante.setText("Crear estudiante y generar QR");
+        btnCrearEstudiante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearEstudianteActionPerformed(evt);
+            }
+        });
 
         btnAbrirQR.setText("Abrir carpeta de QR");
+        btnAbrirQR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAbrirQRActionPerformed(evt);
+            }
+        });
 
         lblHorario.setText("2. Crear materia y asignar horario");
 
@@ -163,10 +181,20 @@ public class VentanaAdmin extends JFrame {
         lblDia.setText("Horarios:");
 
         btnSeleccionarDias.setText("Seleccionar días...");
+        btnSeleccionarDias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSeleccionarDiasActionPerformed(evt);
+            }
+        });
 
         lblDiasSeleccionados.setText("2 días configurados");
 
         btnCrearMateria.setText("Crear materia y horario");
+        btnCrearMateria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearMateriaActionPerformed(evt);
+            }
+        });
 
         lblInscripcion.setText("3. Inscribir al estudiante en una materia");
 
@@ -175,6 +203,11 @@ public class VentanaAdmin extends JFrame {
         lblMateriaInscribir.setText("Materia:");
 
         btnInscribir.setText("Inscribir estudiante");
+        btnInscribir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInscribirActionPerformed(evt);
+            }
+        });
 
         lblEstado.setText("Listo.");
 
@@ -300,6 +333,26 @@ public class VentanaAdmin extends JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSeleccionarDiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarDiasActionPerformed
+        seleccionarDias();
+    }//GEN-LAST:event_btnSeleccionarDiasActionPerformed
+
+    private void btnCrearEstudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearEstudianteActionPerformed
+        crearEstudiante();
+    }//GEN-LAST:event_btnCrearEstudianteActionPerformed
+
+    private void btnAbrirQRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirQRActionPerformed
+        abrirCarpetaQR();
+    }//GEN-LAST:event_btnAbrirQRActionPerformed
+
+    private void btnCrearMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearMateriaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCrearMateriaActionPerformed
+
+    private void btnInscribirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInscribirActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnInscribirActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbrirQR;
