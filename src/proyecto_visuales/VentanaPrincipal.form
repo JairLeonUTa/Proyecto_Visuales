@@ -103,11 +103,13 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Iniciar c&#xe1;mara"/>
       </Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnIniciarActionPerformed"/></Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnDetener">
       <Properties>
         <Property name="text" type="java.lang.String" value="Detener c&#xe1;mara"/>
       </Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDetenerActionPerformed"/></Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblMatricula">
       <Properties>
@@ -118,21 +120,25 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="20230001"/>
       </Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtMatriculaActionPerformed"/></Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnRegistrar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Registrar manual"/>
       </Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRegistrarActionPerformed"/></Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnHorario">
       <Properties>
         <Property name="text" type="java.lang.String" value="Ver horario activo"/>
       </Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnHorarioActionPerformed"/></Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnRefrescar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Refrescar"/>
       </Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRefrescarActionPerformed"/></Events>
     </Component>
     <Container class="javax.swing.JPanel" name="panelCamara">
       <Properties>
