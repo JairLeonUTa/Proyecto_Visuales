@@ -246,10 +246,17 @@ public class VentanaPrincipal extends JFrame {
     private void crearMenuAdministracion() {
         JMenu menuAdmin = new JMenu("Administración");
         JMenuItem abrirAdmin = new JMenuItem("Estudiantes, materias e inscripciones");
+        abrirAdmin.addActionListener(e -> abrirAdministracion());
         menuAdmin.add(abrirAdmin);
         JMenuBar barra = new JMenuBar();
         barra.add(menuAdmin);
         setJMenuBar(barra);
+    }
+
+    private void abrirAdministracion() {
+        VentanaAdmin admin = new VentanaAdmin();
+        admin.setLocationRelativeTo(this);
+        admin.setVisible(true);
     }
 
     @SuppressWarnings("unchecked")
