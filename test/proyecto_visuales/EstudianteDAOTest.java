@@ -9,6 +9,8 @@ public class EstudianteDAOTest {
         probarBusquedaPorMatricula();
         probarActualizacion();
         probarEliminacion();
+        probarMatriculaInexistente();
+        probarCrudCompleto();
         System.out.println("OK: pruebas de EstudianteDAO superadas");
     }
 
@@ -50,6 +52,35 @@ public class EstudianteDAOTest {
                 "debe guardar el estudiante de prueba");
         verificar(EstudianteDAO.eliminarEstudiante(matricula), "debe eliminar");
         verificar(EstudianteDAO.buscarEstudiantePorMatricula(matricula) == null, "ya no debe existir");
+    }
+
+    static void probarMatriculaInexistente() {
+        String matricula = "TEST-NO-EXISTE";
+        borrar(matricula);
+        verificar(EstudianteDAO.buscarEstudiantePorMatricula(matricula) == null, "buscar devuelve null");
+        verificar(!EstudianteDAO.actualizarEstudiante(new Estudiante(matricula, "X", "Y", "")),
+                "actualizar debe fallar");
+        verificar(!EstudianteDAO.eliminarEstudiante(matricula), "eliminar debe fallar");
+        verificar(!EstudianteDAO.getUltimoError().isEmpty(), "debe explicar por qué falló");
+    }
+
+    static void probarCrudCompleto() {
+        String matricula = "TEST-CRUD";
+        borrar(matricula);
+        int antes = EstudianteDAO.cargarEstudiantes().size();
+        verificar(EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Carla", "Ruiz", "")), "crear");
+        verificar(!EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Otra", "Persona", "")),
+                "la matrícula es única");
+        verificar(EstudianteDAO.getUltimoError().contains("ya está registrada"), "avisa la matrícula duplicada");
+        verificar(!EstudianteDAO.guardarEstudiante(new Estudiante("TEST-SIN-NOMBRE", "", "Ruiz", "")),
+                "el nombre es obligatorio");
+        verificar(EstudianteDAO.cargarEstudiantes().size() == antes + 1, "listar incluye al nuevo");
+        verificar("".equals(EstudianteDAO.buscarEstudiantePorMatricula(matricula).getEmail()),
+                "el email vacío es opcional");
+        verificar(EstudianteDAO.actualizarEstudiante(new Estudiante(matricula, "Carla", "Ruiz Mora", "c@p.com")),
+                "actualizar");
+        verificar(EstudianteDAO.eliminarEstudiante(matricula), "eliminar");
+        verificar(EstudianteDAO.cargarEstudiantes().size() == antes, "listar ya no lo incluye");
     }
 
     private static void verificar(boolean condicion, String mensaje) {
