@@ -69,7 +69,11 @@ public class RegistroDAOTest {
         verificar(((Number) porcentaje[1]).intValue() == 1, "cuenta la asistencia en el parcial");
         verificar(((Number) porcentaje[2]).intValue() == 16, "8 semanas x 2 días = 16 clases");
         verificar(Math.abs(((Number) porcentaje[3]).doubleValue() - 6.25) < 0.001, "1 de 16 clases = 6.25%");
-        verificar("6%".equals(RegistroDAO.reporteAsistencia(MATRICULA).get(0)[3]), "el reporte formatea el porcentaje");
+        verificar(((Number) porcentaje[4]).intValue() == 1, "cuenta el atraso en el parcial");
+        Object[] reporte = RegistroDAO.reporteAsistencia(MATRICULA).get(0);
+        verificar(reporte.length == RegistroDAO.COLUMNAS_REPORTE.length, "el reporte tiene una celda por columna");
+        verificar(((Number) reporte[2]).intValue() == 1, "el reporte muestra los atrasos");
+        verificar("6%".equals(reporte[4]), "el reporte formatea el porcentaje");
     }
 
     /** Deja un estudiante inscrito en una materia de dos días y sin registros. */

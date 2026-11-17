@@ -33,7 +33,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -339,6 +341,79 @@ public class VentanaPrincipal extends JFrame {
         JOptionPane.showMessageDialog(this, contenido, "Horario semanal", JOptionPane.PLAIN_MESSAGE);
     }
 
+    private void mostrarReporte() {
+        String matricula = txtMatricula.getText().trim();
+        if (matricula.isEmpty()) {
+            mostrarEstado("Escriba una matrícula para ver su reporte.", COLOR_AVISO);
+            JOptionPane.showMessageDialog(this, "Escriba la matrícula del estudiante para ver su reporte.",
+                    "Reporte de asistencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
+        if (estudiante == null) {
+            mostrarEstado("Estudiante no registrado: " + matricula, COLOR_ERROR);
+            JOptionPane.showMessageDialog(this, "No existe un estudiante con matrícula " + matricula + ".",
+                    "Reporte de asistencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        List<Object[]> filas = RegistroDAO.porcentajePorEstudiante(matricula, RegistroDAO.SEMANAS_POR_PARCIAL);
+        if (filas.isEmpty()) {
+            String motivo = RegistroDAO.getUltimoError().isEmpty()
+                    ? estudiante.getNombre() + " no está inscrito en ninguna materia." : RegistroDAO.getUltimoError();
+            mostrarEstado(motivo, COLOR_AVISO);
+            JOptionPane.showMessageDialog(this, motivo, "Reporte de asistencia", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        int asistencias = 0;
+        int atrasos = 0;
+        int clases = 0;
+        double suma = 0;
+        for (Object[] fila : filas) {
+            asistencias += ((Number) fila[1]).intValue();
+            clases += ((Number) fila[2]).intValue();
+            suma += ((Number) fila[3]).doubleValue();
+            atrasos += ((Number) fila[4]).intValue();
+        }
+        double global = suma / filas.size();
+
+        DefaultTableModel modelo = new DefaultTableModel(RegistroDAO.COLUMNAS_REPORTE, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+        RegistroDAO.reporteAsistencia(matricula).forEach(modelo::addRow);
+        JTable tablaReporte = new JTable(modelo);
+        tablaReporte.setRowHeight(22);
+        DefaultTableCellRenderer centrado = new DefaultTableCellRenderer();
+        centrado.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 1; i < RegistroDAO.COLUMNAS_REPORTE.length; i++) {
+            tablaReporte.getColumnModel().getColumn(i).setCellRenderer(centrado);
+        }
+        tablaReporte.getColumnModel().getColumn(0).setPreferredWidth(260);
+        tablaReporte.getColumnModel().getColumn(3).setPreferredWidth(130);
+        JScrollPane scroll = new JScrollPane(tablaReporte);
+        scroll.setPreferredSize(new Dimension(760, Math.min(300, 40 + 22 * filas.size())));
+
+        JLabel lblAlumno = new JLabel("Estudiante: " + estudiante.getNombre() + " " + estudiante.getApellido()
+                + " (" + matricula + ")");
+        JLabel lblParcial = new JLabel("Parcial de " + RegistroDAO.SEMANAS_POR_PARCIAL
+                + " semanas. Atraso: llegar más de " + TOLERANCIA_ATRASO_MINUTOS + " minutos después del inicio.");
+        JLabel lblGlobal = new JLabel(String.format("Porcentaje global: %.0f%%   (%d de %d clases, %d %s)",
+                global, asistencias, clases, atrasos, atrasos == 1 ? "atraso" : "atrasos"));
+        lblGlobal.setFont(lblGlobal.getFont().deriveFont(java.awt.Font.BOLD, lblGlobal.getFont().getSize() + 3f));
+        JPanel encabezado = new JPanel(new GridLayout(2, 1, 0, 4));
+        encabezado.add(lblAlumno);
+        encabezado.add(lblParcial);
+        JPanel contenido = new JPanel(new BorderLayout(0, 10));
+        contenido.add(encabezado, BorderLayout.NORTH);
+        contenido.add(scroll, BorderLayout.CENTER);
+        contenido.add(lblGlobal, BorderLayout.SOUTH);
+
+        refrescarPorcentaje();
+        JOptionPane.showMessageDialog(this, contenido, "Reporte de asistencia", JOptionPane.PLAIN_MESSAGE);
+    }
+
     static String diaEnEspanol(String dia) {
         try {
             String nombre = DayOfWeek.valueOf(dia).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("es"));
@@ -406,6 +481,7 @@ public class VentanaPrincipal extends JFrame {
         txtMatricula = new javax.swing.JTextField();
         btnRegistrar = new javax.swing.JButton();
         btnHorario = new javax.swing.JButton();
+        btnReporte = new javax.swing.JButton();
         btnRefrescar = new javax.swing.JButton();
         panelCamara = new javax.swing.JPanel();
         lblRegistros = new javax.swing.JLabel();
@@ -453,6 +529,13 @@ public class VentanaPrincipal extends JFrame {
         btnHorario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnHorarioActionPerformed(evt);
+            }
+        });
+
+        btnReporte.setText("Reporte de asistencia");
+        btnReporte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReporteActionPerformed(evt);
             }
         });
 
@@ -523,8 +606,10 @@ public class VentanaPrincipal extends JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnHorario)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReporte)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnRefrescar)
-                        .addGap(0, 320, Short.MAX_VALUE))
+                        .addGap(0, 160, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(panelCamara, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
@@ -549,6 +634,7 @@ public class VentanaPrincipal extends JFrame {
                     .addComponent(txtMatricula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRegistrar)
                     .addComponent(btnHorario)
+                    .addComponent(btnReporte)
                     .addComponent(btnRefrescar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -590,6 +676,10 @@ public class VentanaPrincipal extends JFrame {
         mostrarHorario();
     }//GEN-LAST:event_btnHorarioActionPerformed
 
+    private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
+        mostrarReporte();
+    }//GEN-LAST:event_btnReporteActionPerformed
+
     private void btnRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefrescarActionPerformed
         actualizarVista();
     }//GEN-LAST:event_btnRefrescarActionPerformed
@@ -604,6 +694,7 @@ public class VentanaPrincipal extends JFrame {
     private javax.swing.JButton btnIniciar;
     private javax.swing.JButton btnRefrescar;
     private javax.swing.JButton btnRegistrar;
+    private javax.swing.JButton btnReporte;
     private javax.swing.JLabel lblEstado;
     private javax.swing.JLabel lblMatricula;
     private javax.swing.JLabel lblPorcentaje;

@@ -42,8 +42,10 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnHorario" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnReporte" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnRefrescar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="320" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="160" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="panelCamara" pref="520" max="32767" attributes="0"/>
@@ -75,6 +77,7 @@
                   <Component id="txtMatricula" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnRegistrar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnHorario" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnReporte" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnRefrescar" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -133,6 +136,12 @@
         <Property name="text" type="java.lang.String" value="Ver horario"/>
       </Properties>
       <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnHorarioActionPerformed"/></Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnReporte">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Reporte de asistencia"/>
+      </Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReporteActionPerformed"/></Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnRefrescar">
       <Properties>
