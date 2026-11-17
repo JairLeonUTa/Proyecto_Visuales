@@ -58,6 +58,7 @@ public class VentanaPrincipal extends JFrame {
     public VentanaPrincipal() {
         initComponents();
         tabla.setModel(modeloTabla);
+        ajustarColumnas();
         panelCamara.setLayout(new BorderLayout());
         btnDetener.setEnabled(false);
         addWindowListener(new WindowAdapter() {
@@ -69,6 +70,15 @@ public class VentanaPrincipal extends JFrame {
         crearMenuAdministracion();
         cargarRegistros();
         refrescarPorcentaje();
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+    }
+
+    private void ajustarColumnas() {
+        int[] anchos = {40, 90, 180, 200, 90, 80, 60};
+        for (int i = 0; i < anchos.length; i++) {
+            tabla.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
+        }
+        tabla.setRowHeight(22);
     }
 
     /** Abre la primera webcam disponible y, si se puede, empieza a buscar QR en sus imágenes. */
@@ -430,11 +440,11 @@ public class VentanaPrincipal extends JFrame {
                         .addComponent(btnRefrescar)
                         .addGap(0, 320, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(panelCamara, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(panelCamara, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblRegistros)
-                            .addComponent(scrollRegistros, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(scrollRegistros, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblEstado)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)

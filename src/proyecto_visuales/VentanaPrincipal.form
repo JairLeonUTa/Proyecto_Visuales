@@ -46,11 +46,11 @@
                       <EmptySpace min="0" pref="320" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="panelCamara" max="32767" attributes="0"/>
+                      <Component id="panelCamara" pref="520" max="32767" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblRegistros" min="-2" max="-2" attributes="0"/>
-                          <Component id="scrollRegistros" min="-2" pref="400" max="-2" attributes="0"/>
+                          <Component id="scrollRegistros" pref="680" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
