@@ -2,7 +2,6 @@ package proyecto_visuales;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,19 +12,12 @@ public final class ValidadorHorarios {
     public static final List<String> DIAS_LABORABLES =
             List.of("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY");
 
-    public static final List<String> HORAS_CLASE = horasClase();
+    public static final LocalTime INICIO_JORNADA = LocalTime.of(7, 0);
+    public static final LocalTime FIN_JORNADA = LocalTime.of(20, 0);
 
     private static final DateTimeFormatter AM_PM = DateTimeFormatter.ofPattern("h:mm a", Locale.US);
 
     private ValidadorHorarios() {
-    }
-
-    private static List<String> horasClase() {
-        List<String> horas = new ArrayList<>();
-        for (LocalTime t = LocalTime.of(7, 0); !t.isAfter(LocalTime.of(20, 0)); t = t.plusMinutes(30)) {
-            horas.add(t.toString());
-        }
-        return List.copyOf(horas);
     }
 
     public static String horaAmPm(String hora) {
@@ -33,6 +25,14 @@ public final class ValidadorHorarios {
             return LocalTime.parse(normalizarHora(hora).substring(0, 5)).format(AM_PM);
         } catch (RuntimeException ex) {
             return hora;
+        }
+    }
+
+    public static boolean dentroDeJornada(String inicio, String fin) {
+        try {
+            return !LocalTime.parse(inicio).isBefore(INICIO_JORNADA) && !LocalTime.parse(fin).isAfter(FIN_JORNADA);
+        } catch (RuntimeException ex) {
+            return false;
         }
     }
 
