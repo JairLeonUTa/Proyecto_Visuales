@@ -88,6 +88,12 @@ public class VentanaPrincipal extends JFrame {
         cargarRegistros();
         refrescarPorcentaje();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        Thread sincronizar = new Thread(() -> {
+            boolean ok = Reloj.sincronizar();
+            SwingUtilities.invokeLater(() -> setTitle(getTitle() + (ok ? " - Hora de internet" : " - Hora del equipo")));
+        });
+        sincronizar.setDaemon(true);
+        sincronizar.start();
     }
 
     private void ajustarColumnas() {
@@ -211,7 +217,7 @@ public class VentanaPrincipal extends JFrame {
         if (matricula.isEmpty()) {
             return;
         }
-        lblUltimoQR.setText("Último QR: " + matricula + " (" + LocalTime.now().format(HORA) + ")");
+        lblUltimoQR.setText("Último QR: " + matricula + " (" + Reloj.hora().format(HORA) + ")");
         if (!Estudiante.cedulaValida(matricula)) {
             mostrarEstado("Cédula no válida: " + matricula + ". Debe tener 10 dígitos.", COLOR_ERROR);
             return;
@@ -229,8 +235,8 @@ public class VentanaPrincipal extends JFrame {
             mostrarEstado("Estudiante no registrado: " + matricula, COLOR_ERROR);
             return;
         }
-        LocalDate hoy = LocalDate.now();
-        String hora = LocalTime.now().format(HORA);
+        LocalDate hoy = Reloj.hoy();
+        String hora = Reloj.hora().format(HORA);
         List<Object[]> materias = MateriaDAO.materiasEnHorario(matricula, hoy.getDayOfWeek().name(), hora);
         if (materias.isEmpty()) {
             mostrarEstado("Fuera de horario: " + estudiante.getNombre() + " no tiene clase ahora ("
@@ -300,8 +306,8 @@ public class VentanaPrincipal extends JFrame {
             JOptionPane.showMessageDialog(this, motivo, "Horario", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        String hoy = LocalDate.now().getDayOfWeek().name();
-        String hora = LocalTime.now().format(HORA);
+        String hoy = Reloj.hoy().getDayOfWeek().name();
+        String hora = Reloj.hora().format(HORA);
         DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Día", "Materia", "Inicio", "Fin", "Estado"}, 0) {
             @Override
             public boolean isCellEditable(int fila, int columna) {

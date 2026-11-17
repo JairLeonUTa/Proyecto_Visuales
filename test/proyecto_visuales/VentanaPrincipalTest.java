@@ -41,6 +41,7 @@ public class VentanaPrincipalTest {
         verificar(VentanaPrincipal.esAtraso("08:06", "08:00:00"), "pasada la tolerancia es atraso");
         verificar(VentanaPrincipal.minutosTarde("08:12", "08:00:00") == 12, "calcula los minutos de atraso");
         verificar("Miércoles".equals(VentanaPrincipal.diaEnEspanol("WEDNESDAY")), "muestra el día en español");
+        verificar(Reloj.hoy() != null && Reloj.hora() != null, "el reloj siempre da fecha y hora");
     }
 
     /** No falla si no hay webcam: solo informa cuántas detecta el equipo. */
