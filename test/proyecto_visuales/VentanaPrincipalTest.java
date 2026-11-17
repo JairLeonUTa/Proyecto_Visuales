@@ -80,6 +80,8 @@ public class VentanaPrincipalTest {
         try (var cc = new conexion().conectar()) {
             for (String sql : new String[]{
                 "DELETE r FROM registros r JOIN estudiantes e ON e.id_estudiante = r.id_estudiante WHERE e.matricula = ?",
+                "DELETE FROM inscripciones WHERE id_estudiante = "
+                        + "(SELECT id_estudiante FROM estudiantes WHERE matricula = ?)",
                 "DELETE FROM estudiantes WHERE matricula = ?"}) {
                 try (var ps = cc.prepareStatement(sql)) {
                     ps.setString(1, matricula);

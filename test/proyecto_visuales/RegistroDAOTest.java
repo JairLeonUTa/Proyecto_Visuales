@@ -90,6 +90,8 @@ public class RegistroDAOTest {
     private static void limpiar() {
         ejecutar("DELETE r FROM registros r JOIN estudiantes e ON e.id_estudiante = r.id_estudiante "
                 + "WHERE e.matricula = ?", MATRICULA);
+        ejecutar("DELETE FROM inscripciones WHERE id_estudiante = "
+                + "(SELECT id_estudiante FROM estudiantes WHERE matricula = ?)", MATRICULA);
         ejecutar("DELETE FROM estudiantes WHERE matricula = ?", MATRICULA);
         ejecutar("DELETE FROM materias WHERE codigo = ?", MATERIA);
     }

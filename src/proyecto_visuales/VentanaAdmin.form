@@ -5,7 +5,7 @@
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" value="Administraci&#xf3;n - Asistencia QR"/>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[820, 590]"/>
+      <Dimension value="[820, 660]"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -29,6 +29,11 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="18" max="18" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="lblEditarEstudiante" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="cmbEditarEstudiante" min="-2" pref="380" max="-2" attributes="0"/>
+                  </Group>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblMatricula" min="-2" max="-2" attributes="0"/>
@@ -80,6 +85,11 @@
                           <Component id="lblHorario" min="-2" max="-2" attributes="0"/>
                           <Component id="btnCrearMateria" min="-2" max="-2" attributes="0"/>
                           <Component id="lblInscripcion" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="btnActualizarEstudiante" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="btnEliminarEstudiante" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="btnCrearEstudiante" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -101,6 +111,11 @@
               <Component id="lblTitulo" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="14" max="14" attributes="0"/>
               <Component id="lblDatosEstudiante" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="8" max="8" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblEditarEstudiante" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cmbEditarEstudiante" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace min="8" max="8" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
@@ -130,6 +145,11 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnCrearEstudiante" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnAbrirQR" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="8" max="8" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="btnActualizarEstudiante" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnEliminarEstudiante" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="14" max="14" attributes="0"/>
               <Component id="lblHorario" min="-2" max="-2" attributes="0"/>
@@ -173,8 +193,21 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lblDatosEstudiante">
       <Properties>
-        <Property name="text" type="java.lang.String" value="1. Datos del estudiante"/>
+        <Property name="text" type="java.lang.String" value="1. Crear o gestionar estudiantes"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblEditarEstudiante">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Seleccionar estudiante:"/>
+        <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="cmbEditarEstudiante"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbEditarEstudiante">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbEditarEstudianteActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblMatricula">
       <Properties>
@@ -228,6 +261,24 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAbrirQRActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnActualizarEstudiante">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Actualizar estudiante"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnActualizarEstudianteActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnEliminarEstudiante">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Eliminar estudiante"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEliminarEstudianteActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblHorario">

@@ -133,19 +133,40 @@ public class EstudianteDAO {
         }
     }
 
-    /** Elimina al estudiante; sus inscripciones se borran en cascada. */
+    /** Elimina definitivamente estudiante, asistencias e inscripciones en una sola transacción. */
     public static boolean eliminarEstudiante(String matricula) {
         ultimoError = "";
-        try (Connection cc = abrirConexion();
-             PreparedStatement pst = cc.prepareStatement("delete from estudiantes where matricula=?")) {
-            pst.setString(1, matricula);
-            int n = pst.executeUpdate();
-            if (n == 0) {
-                ultimoError = "No existe un estudiante con matrícula " + matricula + ".";
+        try (Connection cc = abrirConexion()) {
+            cc.setAutoCommit(false);
+            try {
+                try (PreparedStatement pst = cc.prepareStatement("DELETE FROM registros WHERE id_estudiante = "
+                        + "(SELECT id_estudiante FROM estudiantes WHERE matricula = ?)")) {
+                    pst.setString(1, matricula);
+                    pst.executeUpdate();
+                }
+                try (PreparedStatement pst = cc.prepareStatement("DELETE FROM inscripciones WHERE id_estudiante = "
+                        + "(SELECT id_estudiante FROM estudiantes WHERE matricula = ?)")) {
+                    pst.setString(1, matricula);
+                    pst.executeUpdate();
+                }
+                int n;
+                try (PreparedStatement pst = cc.prepareStatement("DELETE FROM estudiantes WHERE matricula = ?")) {
+                    pst.setString(1, matricula);
+                    n = pst.executeUpdate();
+                }
+                cc.commit();
+                if (n == 0) {
+                    ultimoError = "No existe un estudiante con matrícula " + matricula + ".";
+                }
+                return n > 0;
+            } catch (SQLException ex) {
+                cc.rollback();
+                throw ex;
             }
-            return n > 0;
         } catch (SQLException ex) {
-            ultimoError = "Error al eliminar estudiante: " + ex.getMessage();
+            ultimoError = ex.getErrorCode() == 1451
+                    ? "No se puede eliminar: existen otros datos relacionados con el estudiante."
+                    : "Error al eliminar estudiante: " + ex.getMessage();
             return false;
         }
     }

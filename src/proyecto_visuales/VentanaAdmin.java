@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /** Administración de estudiantes, materias, horarios e inscripciones. */
 public class VentanaAdmin extends JFrame {
@@ -58,6 +59,78 @@ public class VentanaAdmin extends JFrame {
             lblEstado.setToolTipText(archivo.getAbsolutePath());
         } catch (Exception ex) {
             mostrarEstado("Estudiante creado, pero no se pudo generar el QR: " + ex.getMessage());
+        }
+    }
+
+    private void cargarEstudianteSeleccionado() {
+        EstudianteItem item = (EstudianteItem) cmbEditarEstudiante.getSelectedItem();
+        boolean nuevo = item == null || item.matricula.isEmpty();
+        txtMatricula.setText("");
+        txtNombre.setText("");
+        txtApellido.setText("");
+        txtEmail.setText("");
+        txtMatricula.setEditable(nuevo);
+        btnCrearEstudiante.setEnabled(nuevo);
+        btnActualizarEstudiante.setEnabled(false);
+        btnEliminarEstudiante.setEnabled(false);
+        lblQr.setIcon(null);
+        lblQr.setText("El QR aparecerá aquí");
+        if (nuevo) {
+            return;
+        }
+        Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(item.matricula);
+        if (estudiante == null) {
+            mostrarEstado(EstudianteDAO.getUltimoError().isEmpty()
+                    ? "El estudiante seleccionado ya no existe." : EstudianteDAO.getUltimoError());
+            return;
+        }
+        txtMatricula.setText(estudiante.getMatricula());
+        txtNombre.setText(estudiante.getNombre());
+        txtApellido.setText(estudiante.getApellido());
+        txtEmail.setText(estudiante.getEmail());
+        btnActualizarEstudiante.setEnabled(true);
+        btnEliminarEstudiante.setEnabled(true);
+    }
+
+    private void actualizarEstudiante() {
+        EstudianteItem item = (EstudianteItem) cmbEditarEstudiante.getSelectedItem();
+        if (item == null || item.matricula.isEmpty()) {
+            mostrarEstado("Seleccione un estudiante para actualizar.");
+            return;
+        }
+        Estudiante estudiante = new Estudiante(item.matricula, txtNombre.getText().trim(),
+                txtApellido.getText().trim(), txtEmail.getText().trim());
+        if (!EstudianteDAO.actualizarEstudiante(estudiante)) {
+            mostrarEstado("No se actualizó el estudiante. " + EstudianteDAO.getUltimoError());
+            return;
+        }
+        cargarEstudiantes();
+        seleccionarEstudiante(item.matricula);
+        mostrarEstado("Estudiante actualizado. La matrícula y su QR no cambian.");
+    }
+
+    private void eliminarEstudiante() {
+        EstudianteItem item = (EstudianteItem) cmbEditarEstudiante.getSelectedItem();
+        if (item == null || item.matricula.isEmpty()) {
+            mostrarEstado("Seleccione un estudiante para eliminar.");
+            return;
+        }
+        // initialValue permite dejar Cancelar por defecto:
+        // https://docs.oracle.com/en/java/javase/21/docs/api/java.desktop/javax/swing/JOptionPane.html
+        int opcion = JOptionPane.showOptionDialog(this,
+                "¿Eliminar a " + item.nombre + " (" + item.matricula + ")?\n"
+                + "También se eliminarán TODAS sus asistencias e inscripciones.\n"
+                + "Esta acción es permanente y no se puede deshacer.",
+                "Eliminar estudiante", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, new Object[]{"Eliminar", "Cancelar"}, "Cancelar");
+        if (opcion != 0) {
+            return;
+        }
+        if (EstudianteDAO.eliminarEstudiante(item.matricula)) {
+            cargarEstudiantes();
+            mostrarEstado("Estudiante, asistencias e inscripciones eliminados.");
+        } else {
+            mostrarEstado(EstudianteDAO.getUltimoError());
         }
     }
 
@@ -151,17 +224,23 @@ public class VentanaAdmin extends JFrame {
     @SuppressWarnings("unchecked")
     private void cargarEstudiantes() {
         cmbEstudiantes.removeAllItems();
+        cmbEditarEstudiante.removeAllItems();
+        cmbEditarEstudiante.addItem(new EstudianteItem("", "Nuevo estudiante"));
         for (Estudiante estudiante : EstudianteDAO.cargarEstudiantes()) {
-            cmbEstudiantes.addItem(new EstudianteItem(estudiante.getMatricula(),
-                    estudiante.getNombre() + " " + estudiante.getApellido()));
+            EstudianteItem item = new EstudianteItem(estudiante.getMatricula(),
+                    estudiante.getNombre() + " " + estudiante.getApellido());
+            cmbEstudiantes.addItem(item);
+            cmbEditarEstudiante.addItem(item);
         }
     }
 
     private void seleccionarEstudiante(String matricula) {
-        for (int i = 0; i < cmbEstudiantes.getItemCount(); i++) {
-            if (((EstudianteItem) cmbEstudiantes.getItemAt(i)).matricula.equals(matricula)) {
-                cmbEstudiantes.setSelectedIndex(i);
-                return;
+        for (javax.swing.JComboBox<?> combo : List.of(cmbEstudiantes, cmbEditarEstudiante)) {
+            for (int i = 0; i < combo.getItemCount(); i++) {
+                if (((EstudianteItem) combo.getItemAt(i)).matricula.equals(matricula)) {
+                    combo.setSelectedIndex(i);
+                    break;
+                }
             }
         }
     }
@@ -214,7 +293,7 @@ public class VentanaAdmin extends JFrame {
 
         @Override
         public String toString() {
-            return matricula + " - " + nombre;
+            return matricula.isEmpty() ? nombre : matricula + " - " + nombre;
         }
     }
 
@@ -224,6 +303,8 @@ public class VentanaAdmin extends JFrame {
 
         lblTitulo = new javax.swing.JLabel();
         lblDatosEstudiante = new javax.swing.JLabel();
+        lblEditarEstudiante = new javax.swing.JLabel();
+        cmbEditarEstudiante = new javax.swing.JComboBox();
         lblMatricula = new javax.swing.JLabel();
         txtMatricula = new javax.swing.JTextField();
         lblNombre = new javax.swing.JLabel();
@@ -235,6 +316,8 @@ public class VentanaAdmin extends JFrame {
         lblQr = new javax.swing.JLabel();
         btnCrearEstudiante = new javax.swing.JButton();
         btnAbrirQR = new javax.swing.JButton();
+        btnActualizarEstudiante = new javax.swing.JButton();
+        btnEliminarEstudiante = new javax.swing.JButton();
         lblHorario = new javax.swing.JLabel();
         lblCodigoMateria = new javax.swing.JLabel();
         txtCodigoMateria = new javax.swing.JTextField();
@@ -254,11 +337,19 @@ public class VentanaAdmin extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Administración - Asistencia QR");
-        setMinimumSize(new java.awt.Dimension(820, 590));
+        setMinimumSize(new java.awt.Dimension(820, 660));
 
         lblTitulo.setText("Administración de estudiantes y horarios");
 
-        lblDatosEstudiante.setText("1. Datos del estudiante");
+        lblDatosEstudiante.setText("1. Crear o gestionar estudiantes");
+
+        lblEditarEstudiante.setText("Seleccionar estudiante:");
+        lblEditarEstudiante.setLabelFor(cmbEditarEstudiante);
+        cmbEditarEstudiante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbEditarEstudianteActionPerformed(evt);
+            }
+        });
 
         lblMatricula.setText("Matrícula:");
 
@@ -282,6 +373,22 @@ public class VentanaAdmin extends JFrame {
         btnAbrirQR.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAbrirQRActionPerformed(evt);
+            }
+        });
+
+        btnActualizarEstudiante.setText("Actualizar estudiante");
+        btnActualizarEstudiante.setEnabled(false);
+        btnActualizarEstudiante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarEstudianteActionPerformed(evt);
+            }
+        });
+
+        btnEliminarEstudiante.setText("Eliminar estudiante");
+        btnEliminarEstudiante.setEnabled(false);
+        btnEliminarEstudiante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarEstudianteActionPerformed(evt);
             }
         });
 
@@ -332,6 +439,10 @@ public class VentanaAdmin extends JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblEditarEstudiante)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbEditarEstudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblMatricula)
                             .addComponent(lblNombre)
@@ -377,6 +488,10 @@ public class VentanaAdmin extends JFrame {
                             .addComponent(btnCrearMateria)
                             .addComponent(lblInscripcion)
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnActualizarEstudiante)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnEliminarEstudiante))
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnCrearEstudiante)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnAbrirQR)))
@@ -391,6 +506,10 @@ public class VentanaAdmin extends JFrame {
                 .addComponent(lblTitulo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, 14)
                 .addComponent(lblDatosEstudiante)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEditarEstudiante)
+                    .addComponent(cmbEditarEstudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, 8)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -414,6 +533,10 @@ public class VentanaAdmin extends JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCrearEstudiante)
                     .addComponent(btnAbrirQR))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnActualizarEstudiante)
+                    .addComponent(btnEliminarEstudiante))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, 14)
                 .addComponent(lblHorario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, 8)
@@ -467,12 +590,27 @@ public class VentanaAdmin extends JFrame {
         inscribirEstudiante();
     }//GEN-LAST:event_btnInscribirActionPerformed
 
+    private void cmbEditarEstudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbEditarEstudianteActionPerformed
+        cargarEstudianteSeleccionado();
+    }//GEN-LAST:event_cmbEditarEstudianteActionPerformed
+
+    private void btnActualizarEstudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarEstudianteActionPerformed
+        actualizarEstudiante();
+    }//GEN-LAST:event_btnActualizarEstudianteActionPerformed
+
+    private void btnEliminarEstudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarEstudianteActionPerformed
+        eliminarEstudiante();
+    }//GEN-LAST:event_btnEliminarEstudianteActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbrirQR;
+    private javax.swing.JButton btnActualizarEstudiante;
     private javax.swing.JButton btnCrearEstudiante;
     private javax.swing.JButton btnCrearMateria;
+    private javax.swing.JButton btnEliminarEstudiante;
     private javax.swing.JButton btnInscribir;
     private javax.swing.JButton btnSeleccionarDias;
+    private javax.swing.JComboBox cmbEditarEstudiante;
     private javax.swing.JComboBox cmbEstudiantes;
     private javax.swing.JComboBox cmbMaterias;
     private javax.swing.JLabel lblApellido;
@@ -480,6 +618,7 @@ public class VentanaAdmin extends JFrame {
     private javax.swing.JLabel lblDatosEstudiante;
     private javax.swing.JLabel lblDia;
     private javax.swing.JLabel lblDiasSeleccionados;
+    private javax.swing.JLabel lblEditarEstudiante;
     private javax.swing.JLabel lblEmail;
     private javax.swing.JLabel lblEstado;
     private javax.swing.JLabel lblEstudianteInscribir;
