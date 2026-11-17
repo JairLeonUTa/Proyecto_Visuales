@@ -211,8 +211,12 @@ public class VentanaPrincipal extends JFrame {
         if (matricula.isEmpty()) {
             return;
         }
-        txtMatricula.setText(matricula);
         lblUltimoQR.setText("Último QR: " + matricula + " (" + LocalTime.now().format(HORA) + ")");
+        if (!Estudiante.cedulaValida(matricula)) {
+            mostrarEstado("Cédula no válida: " + matricula + ". Debe tener 10 dígitos.", COLOR_ERROR);
+            return;
+        }
+        txtMatricula.setText(matricula);
         long ahora = System.currentTimeMillis();
         if (matricula.equals(ultimaMatricula) && ahora - ultimaLectura < 2500) {
             return;
@@ -274,6 +278,11 @@ public class VentanaPrincipal extends JFrame {
             mostrarEstado("Escriba una cédula para ver su horario.", COLOR_AVISO);
             JOptionPane.showMessageDialog(this, "Escriba la cédula del estudiante para ver su horario.",
                     "Horario", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (!Estudiante.cedulaValida(matricula)) {
+            mostrarEstado("Cédula no válida: " + matricula + ". Debe tener 10 dígitos.", COLOR_ERROR);
+            JOptionPane.showMessageDialog(this, "La cédula debe tener 10 dígitos.", "Horario", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
@@ -347,6 +356,11 @@ public class VentanaPrincipal extends JFrame {
             mostrarEstado("Escriba una cédula para ver su reporte.", COLOR_AVISO);
             JOptionPane.showMessageDialog(this, "Escriba la cédula del estudiante para ver su reporte.",
                     "Reporte de asistencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (!Estudiante.cedulaValida(matricula)) {
+            mostrarEstado("Cédula no válida: " + matricula + ". Debe tener 10 dígitos.", COLOR_ERROR);
+            JOptionPane.showMessageDialog(this, "La cédula debe tener 10 dígitos.", "Reporte de asistencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
@@ -511,7 +525,6 @@ public class VentanaPrincipal extends JFrame {
 
         lblMatricula.setText("Cédula:");
 
-        txtMatricula.setText("20230001");
         txtMatricula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtMatriculaActionPerformed(evt);

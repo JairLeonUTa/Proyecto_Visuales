@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.Window;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -19,7 +18,7 @@ import javax.swing.Timer;
 public class VentanaAdminCrudTest {
 
     public static void main(String[] args) throws Exception {
-        String id = "TEST-ADM-" + UUID.randomUUID().toString().substring(0, 8);
+        String id = String.format("98%08d", (long) (Math.random() * 100_000_000L));
         try {
             verificar(MateriaDAO.guardarMateria(id, "Materia de prueba", List.of(
                     new HorarioMateria("MONDAY", "08:00", "10:00"),

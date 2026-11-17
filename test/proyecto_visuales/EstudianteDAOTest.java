@@ -15,7 +15,7 @@ public class EstudianteDAOTest {
     }
 
     static void probarBusquedaPorMatricula() {
-        String matricula = "TEST-BUSCAR";
+        String matricula = "9999990001";
         borrar(matricula);
         ejecutar("insert into estudiantes(matricula,nombre,apellido,email) values (?,?,?,?)",
                 matricula, "Ana", "Prueba", "ana@prueba.com");
@@ -30,7 +30,7 @@ public class EstudianteDAOTest {
     }
 
     static void probarActualizacion() {
-        String matricula = "TEST-ACTUALIZAR";
+        String matricula = "9999990002";
         borrar(matricula);
         verificar(EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Luis", "Viejo", "")),
                 "debe guardar el estudiante de prueba");
@@ -46,7 +46,7 @@ public class EstudianteDAOTest {
     }
 
     static void probarEliminacion() {
-        String matricula = "TEST-ELIMINAR";
+        String matricula = "9999990003";
         borrar(matricula);
         verificar(EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Eva", "Borrar", "")),
                 "debe guardar el estudiante de prueba");
@@ -55,7 +55,7 @@ public class EstudianteDAOTest {
     }
 
     static void probarMatriculaInexistente() {
-        String matricula = "TEST-NO-EXISTE";
+        String matricula = "9999990004";
         borrar(matricula);
         verificar(EstudianteDAO.buscarEstudiantePorMatricula(matricula) == null, "buscar devuelve null");
         verificar(!EstudianteDAO.actualizarEstudiante(new Estudiante(matricula, "X", "Y", "")),
@@ -65,15 +65,20 @@ public class EstudianteDAOTest {
     }
 
     static void probarCrudCompleto() {
-        String matricula = "TEST-CRUD";
+        String matricula = "9999990005";
         borrar(matricula);
         int antes = EstudianteDAO.cargarEstudiantes().size();
         verificar(EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Carla", "Ruiz", "")), "crear");
         verificar(!EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Otra", "Persona", "")),
                 "la cédula es única");
         verificar(EstudianteDAO.getUltimoError().contains("ya está registrada"), "avisa la cédula duplicada");
-        verificar(!EstudianteDAO.guardarEstudiante(new Estudiante("TEST-SIN-NOMBRE", "", "Ruiz", "")),
+        verificar(!EstudianteDAO.guardarEstudiante(new Estudiante("9999990006", "", "Ruiz", "")),
                 "el nombre es obligatorio");
+        verificar(!EstudianteDAO.guardarEstudiante(new Estudiante("12345", "Corta", "Ruiz", "")),
+                "la cédula necesita 10 dígitos");
+        verificar(EstudianteDAO.getUltimoError().contains("10 dígitos"), "explica el formato de la cédula");
+        verificar(!EstudianteDAO.guardarEstudiante(new Estudiante("99999A0007", "Letra", "Ruiz", "")),
+                "la cédula solo tiene números");
         verificar(EstudianteDAO.cargarEstudiantes().size() == antes + 1, "listar incluye al nuevo");
         verificar("".equals(EstudianteDAO.buscarEstudiantePorMatricula(matricula).getEmail()),
                 "el email vacío es opcional");

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class RegistroDAOTest {
 
-    private static final String MATRICULA = "TEST-REG";
+    private static final String MATRICULA = "9999990010";
     private static final String MATERIA = "TEST-MAT";
 
     public static void main(String[] args) {
@@ -60,7 +60,7 @@ public class RegistroDAOTest {
         reiniciar();
         String hoy = LocalDate.now().toString();
         verificar(RegistroDAO.guardarRegistro(MATRICULA, MATERIA, hoy, "08:20", true), "registrar asistencia");
-        verificar(!RegistroDAO.guardarRegistro("TEST-NADIE", MATERIA, hoy, "08:20", false),
+        verificar(!RegistroDAO.guardarRegistro("9999990011", MATERIA, hoy, "08:20", false),
                 "no registra a un estudiante inexistente");
         verificar(RegistroDAO.listarRegistrosPorMatricula(MATRICULA, 10).size() == 1, "filtra por cédula");
         verificar(RegistroDAO.listarRegistrosPorFecha(hoy, 500).stream().anyMatch(f -> MATRICULA.equals(f[1])),

@@ -9,6 +9,10 @@ public class Estudiante {
     public Estudiante() {
     }
 
+    public static boolean cedulaValida(String cedula) {
+        return cedula != null && cedula.trim().matches("\\d{10}");
+    }
+
     public Estudiante(String matricula, String nombre, String apellido, String email) {
         this.matricula = matricula;
         this.nombre = nombre;

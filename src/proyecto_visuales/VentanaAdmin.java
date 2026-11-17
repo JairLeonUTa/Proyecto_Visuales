@@ -21,6 +21,11 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 /** Administración de estudiantes, materias, horarios e inscripciones. */
 public class VentanaAdmin extends JFrame {
@@ -32,6 +37,7 @@ public class VentanaAdmin extends JFrame {
     public VentanaAdmin() {
         initComponents();
         lblEstado.setFont(lblEstado.getFont().deriveFont(java.awt.Font.BOLD, lblEstado.getFont().getSize() + 1f));
+        limitarACedula(txtMatricula);
         cargarMaterias();
         cargarEstudiantes();
         actualizarTextoDias();
@@ -97,6 +103,25 @@ public class VentanaAdmin extends JFrame {
         }
     }
 
+    static void limitarACedula(JTextField campo) {
+        ((AbstractDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String texto, AttributeSet attr)
+                    throws BadLocationException {
+                replace(fb, offset, 0, texto, attr);
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int largo, String texto, AttributeSet attrs)
+                    throws BadLocationException {
+                String digitos = texto == null ? "" : texto.replaceAll("\\D", "");
+                int espacio = 10 - (fb.getDocument().getLength() - largo);
+                fb.replace(offset, largo, digitos.substring(0, Math.max(0, Math.min(espacio, digitos.length()))), attrs);
+            }
+        });
+        campo.setToolTipText("Cédula de 10 dígitos");
+    }
+
     private void mostrarQR(BufferedImage imagen) {
         lblQr.setText("");
         lblQr.setIcon(new ImageIcon(imagen.getScaledInstance(180, 180, Image.SCALE_SMOOTH)));
@@ -142,7 +167,7 @@ public class VentanaAdmin extends JFrame {
         }
     }
 
-    /** Genera qrs/qr_MATRICULA.png con la cédula como contenido del QR. */
+    /** Genera qrs/qr_CEDULA.png con la cédula como contenido del QR. */
     static File generarQR(String matricula) throws Exception {
         Path carpeta = Paths.get("qrs");
         Files.createDirectories(carpeta);

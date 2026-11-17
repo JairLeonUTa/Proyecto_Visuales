@@ -6,7 +6,7 @@ import java.util.List;
 
 public class HorarioSemanalTest {
 
-    private static final String ESTUDIANTE = "TEST-HORARIO";
+    private static final String ESTUDIANTE = "9999990020";
     private static final String[] MATERIAS = {"TST-BD", "TST-CV", "TST-MA", "TST-MCS", "TST-RED"};
 
     public static void main(String[] args) {

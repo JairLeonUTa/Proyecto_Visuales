@@ -90,6 +90,10 @@ public class EstudianteDAO {
             ultimoError = "Cédula, nombre y apellido son obligatorios.";
             return false;
         }
+        if (!Estudiante.cedulaValida(estudiante.getMatricula())) {
+            ultimoError = "La cédula debe tener exactamente 10 dígitos, por ejemplo 0102030405.";
+            return false;
+        }
         String sql = "insert into estudiantes(matricula,nombre,apellido,email) values (?,?,?,?)";
         try (Connection cc = abrirConexion();
              PreparedStatement pst = cc.prepareStatement(sql)) {

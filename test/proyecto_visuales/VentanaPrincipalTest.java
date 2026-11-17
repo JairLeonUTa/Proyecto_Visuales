@@ -26,15 +26,15 @@ public class VentanaPrincipalTest {
     /** Genera un QR como el de Administración y lo decodifica con el lector de la cámara. */
     static void probarLecturaQR() throws Exception {
         BufferedImage imagen = MatrixToImageWriter.toBufferedImage(
-                new QRCodeWriter().encode("20230001", BarcodeFormat.QR_CODE, 320, 320));
-        verificar("20230001".equals(VentanaPrincipal.decodificarQR(imagen)), "lee la cédula del QR");
+                new QRCodeWriter().encode("0102030405", BarcodeFormat.QR_CODE, 320, 320));
+        verificar("0102030405".equals(VentanaPrincipal.decodificarQR(imagen)), "lee la cédula del QR");
         verificar(VentanaPrincipal.decodificarQR(new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB)) == null,
                 "una imagen sin QR no devuelve nada");
         verificar(VentanaPrincipal.decodificarQR(null) == null, "sin imagen de cámara no falla");
     }
 
     static void probarReglasDeRegistro() {
-        verificar("20230001".equals(VentanaPrincipal.extraerMatricula(" 20230001|Ana Pérez ")),
+        verificar("0102030405".equals(VentanaPrincipal.extraerMatricula(" 0102030405|Ana Pérez ")),
                 "usa solo la cédula del contenido");
         verificar(!VentanaPrincipal.esAtraso("08:00", "08:00:00"), "llegar a la hora no es atraso");
         verificar(!VentanaPrincipal.esAtraso("08:05", "08:00:00"), "dentro de los 5 minutos de tolerancia no es atraso");
@@ -52,7 +52,7 @@ public class VentanaPrincipalTest {
 
     /** Registra una asistencia y comprueba que la tabla de la ventana pueda mostrarla. */
     static void probarRegistroYTabla() {
-        String matricula = "TEST-VP";
+        String matricula = "9999990030";
         String materia = "TEST-VPM";
         limpiar(matricula, materia);
         try {
