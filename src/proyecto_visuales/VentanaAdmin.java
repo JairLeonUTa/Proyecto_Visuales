@@ -8,6 +8,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import java.awt.Desktop;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -52,9 +54,7 @@ public class VentanaAdmin extends JFrame {
         seleccionarEstudiante(matricula);
         try {
             File archivo = generarQR(matricula);
-            lblQr.setText("");
-            lblQr.setIcon(new ImageIcon(new ImageIcon(archivo.getAbsolutePath()).getImage()
-                    .getScaledInstance(180, 180, Image.SCALE_SMOOTH)));
+            mostrarQR(imagenQR(matricula));
             mostrarEstado("Estudiante creado. QR guardado en qrs/" + archivo.getName());
             lblEstado.setToolTipText(archivo.getAbsolutePath());
         } catch (Exception ex) {
@@ -90,6 +90,16 @@ public class VentanaAdmin extends JFrame {
         txtEmail.setText(estudiante.getEmail());
         btnActualizarEstudiante.setEnabled(true);
         btnEliminarEstudiante.setEnabled(true);
+        try {
+            mostrarQR(imagenQR(estudiante.getMatricula()));
+        } catch (Exception ex) {
+            lblQr.setText("No se pudo mostrar el QR");
+        }
+    }
+
+    private void mostrarQR(BufferedImage imagen) {
+        lblQr.setText("");
+        lblQr.setIcon(new ImageIcon(imagen.getScaledInstance(180, 180, Image.SCALE_SMOOTH)));
     }
 
     private void actualizarEstudiante() {
@@ -138,13 +148,17 @@ public class VentanaAdmin extends JFrame {
     static File generarQR(String matricula) throws Exception {
         Path carpeta = Paths.get("qrs");
         Files.createDirectories(carpeta);
+        File archivo = carpeta.resolve("qr_" + matricula + ".png").toFile();
+        ImageIO.write(imagenQR(matricula), "PNG", archivo);
+        return archivo;
+    }
+
+    static BufferedImage imagenQR(String matricula) throws Exception {
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.MARGIN, 2);
         BitMatrix qr = new QRCodeWriter().encode(matricula, BarcodeFormat.QR_CODE, 320, 320, hints);
-        File archivo = carpeta.resolve("qr_" + matricula + ".png").toFile();
-        MatrixToImageWriter.writeToPath(qr, "PNG", archivo.toPath());
-        return archivo;
+        return MatrixToImageWriter.toBufferedImage(qr);
     }
 
     private void crearMateria() {

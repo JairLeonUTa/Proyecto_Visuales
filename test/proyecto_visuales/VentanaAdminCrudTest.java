@@ -64,6 +64,8 @@ public class VentanaAdminCrudTest {
             verificar("Ana".equals(nombre.getText()) && "Prueba".equals(apellido.getText())
                     && email.getText().isEmpty(), "carga todos los datos");
             verificar(!crear.isEnabled() && actualizar.isEnabled() && eliminar.isEnabled(), "estado de edición");
+            JLabel qr = campo(ventana, "lblQr", JLabel.class);
+            verificar(qr.getIcon() != null, "muestra el QR del estudiante seleccionado");
 
             nombre.setText(" ");
             actualizar.doClick();
@@ -82,6 +84,7 @@ public class VentanaAdminCrudTest {
             verificar(matricula.isEditable() && matricula.getText().isEmpty() && nombre.getText().isEmpty()
                     && apellido.getText().isEmpty() && email.getText().isEmpty()
                     && crear.isEnabled() && !actualizar.isEnabled() && !eliminar.isEnabled(), "nuevo limpia el formulario");
+            verificar(qr.getIcon() == null, "nuevo quita el QR anterior");
             seleccionar(selector, id);
             verificar(RegistroDAO.guardarRegistro(id, id, LocalDate.now().toString(), "08:00", false), "crear asistencia");
             responderEliminacion(ventana, eliminar, "Cancelar");
