@@ -10,6 +10,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -41,6 +42,10 @@ public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
     static final int TOLERANCIA_ATRASO_MINUTOS = 5;
+    private static final Color COLOR_OK = new Color(0, 128, 0);
+    private static final Color COLOR_AVISO = new Color(204, 102, 0);
+    private static final Color COLOR_ERROR = new Color(192, 0, 0);
+    private static final Color COLOR_INFO = new Color(51, 51, 51);
     static final Object[] COLUMNAS = {"#", "Matrícula", "Estudiante", "Materia", "Fecha", "Hora", "Atraso"};
 
     private Webcam webcam;
@@ -59,6 +64,8 @@ public class VentanaPrincipal extends JFrame {
         initComponents();
         tabla.setModel(modeloTabla);
         ajustarColumnas();
+        lblEstado.setFont(lblEstado.getFont().deriveFont(java.awt.Font.BOLD, lblEstado.getFont().getSize() + 4f));
+        lblPorcentaje.setFont(lblPorcentaje.getFont().deriveFont(java.awt.Font.BOLD));
         panelCamara.setLayout(new BorderLayout());
         btnDetener.setEnabled(false);
         addWindowListener(new WindowAdapter() {
@@ -105,7 +112,7 @@ public class VentanaPrincipal extends JFrame {
         btnIniciar.setEnabled(false);
         btnDetener.setEnabled(true);
         escaneando = true;
-        lblEstado.setText("Cámara activa; esperando QR...");
+        mostrarEstado("Cámara activa; esperando QR...", COLOR_INFO);
         Thread lector = new Thread(this::leerQR, "lector-qr");
         lector.setDaemon(true);
         lector.start();
@@ -134,11 +141,16 @@ public class VentanaPrincipal extends JFrame {
         }
         btnIniciar.setEnabled(true);
         btnDetener.setEnabled(false);
-        lblEstado.setText("Cámara detenida.");
+        mostrarEstado("Cámara detenida.", COLOR_INFO);
+    }
+
+    private void mostrarEstado(String texto, Color color) {
+        lblEstado.setForeground(color);
+        lblEstado.setText(texto);
     }
 
     private void mostrarErrorCamara(String mensaje) {
-        lblEstado.setText(mensaje);
+        mostrarEstado(mensaje, COLOR_ERROR);
         JOptionPane.showMessageDialog(this, mensaje, "Cámara web", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -200,15 +212,15 @@ public class VentanaPrincipal extends JFrame {
 
         Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
         if (estudiante == null) {
-            lblEstado.setText("Estudiante no registrado: " + matricula);
+            mostrarEstado("Estudiante no registrado: " + matricula, COLOR_ERROR);
             return;
         }
         LocalDate hoy = LocalDate.now();
         String hora = LocalTime.now().format(HORA);
         List<Object[]> materias = MateriaDAO.materiasEnHorario(matricula, hoy.getDayOfWeek().name(), hora);
         if (materias.isEmpty()) {
-            lblEstado.setText("Fuera de horario: " + estudiante.getNombre() + " no tiene clase ahora ("
-                    + hoy.getDayOfWeek() + " " + hora + ").");
+            mostrarEstado("Fuera de horario: " + estudiante.getNombre() + " no tiene clase ahora ("
+                    + hoy.getDayOfWeek() + " " + hora + ").", COLOR_AVISO);
             return;
         }
         Object[] materia = materias.get(0);
@@ -216,10 +228,11 @@ public class VentanaPrincipal extends JFrame {
         String inicio = String.valueOf(materia[3]);
         boolean atraso = esAtraso(hora, inicio);
         if (RegistroDAO.guardarRegistro(matricula, codigo, hoy.toString(), hora, atraso)) {
-            lblEstado.setText("Asistencia registrada: " + estudiante.getNombre() + " " + estudiante.getApellido()
-                    + " - " + codigo + (atraso ? " (atraso de " + minutosTarde(hora, inicio) + " min)" : " (a tiempo)"));
+            mostrarEstado("Asistencia registrada: " + estudiante.getNombre() + " " + estudiante.getApellido()
+                    + " - " + codigo + (atraso ? " (atraso de " + minutosTarde(hora, inicio) + " min)" : " (a tiempo)"),
+                    atraso ? COLOR_AVISO : COLOR_OK);
         } else {
-            lblEstado.setText("No se registró: " + RegistroDAO.getUltimoError());
+            mostrarEstado("No se registró: " + RegistroDAO.getUltimoError(), COLOR_ERROR);
         }
         actualizarVista();
     }
@@ -248,17 +261,17 @@ public class VentanaPrincipal extends JFrame {
     private void mostrarHorario() {
         String matricula = txtMatricula.getText().trim();
         if (matricula.isEmpty()) {
-            lblEstado.setText("Escriba una matrícula para ver su horario activo.");
+            mostrarEstado("Escriba una matrícula para ver su horario activo.", COLOR_AVISO);
             return;
         }
         String dia = LocalDate.now().getDayOfWeek().name();
         String hora = LocalTime.now().format(HORA);
         List<Object[]> materias = MateriaDAO.materiasEnHorario(matricula, dia, hora);
         if (materias.isEmpty()) {
-            lblEstado.setText("Sin materia activa para " + matricula + " ahora (" + dia + " " + hora + ").");
+            mostrarEstado("Sin materia activa para " + matricula + " ahora (" + dia + " " + hora + ").", COLOR_AVISO);
         } else {
             Object[] m = materias.get(0);
-            lblEstado.setText("Materia activa: " + m[0] + " - " + m[1] + " (" + m[3] + " a " + m[4] + ")");
+            mostrarEstado("Materia activa: " + m[0] + " - " + m[1] + " (" + m[3] + " a " + m[4] + ")", COLOR_OK);
         }
     }
 
@@ -445,9 +458,8 @@ public class VentanaPrincipal extends JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblRegistros)
                             .addComponent(scrollRegistros, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)))
+                    .addComponent(lblEstado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblEstado)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblUltimoQR)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                         .addComponent(lblPorcentaje)))
@@ -473,8 +485,9 @@ public class VentanaPrincipal extends JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(scrollRegistros, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblEstado)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblEstado)
                     .addComponent(lblUltimoQR)
                     .addComponent(lblPorcentaje))
                 .addContainerGap())
