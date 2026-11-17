@@ -125,8 +125,6 @@ public class VentanaAdmin extends JFrame {
             mostrarEstado("Seleccione un estudiante para eliminar.");
             return;
         }
-        // initialValue permite dejar Cancelar por defecto:
-        // https://docs.oracle.com/en/java/javase/21/docs/api/java.desktop/javax/swing/JOptionPane.html
         int opcion = JOptionPane.showOptionDialog(this,
                 "¿Eliminar a " + item.nombre + " (" + item.matricula + ")?\n"
                 + "También se eliminarán TODAS sus asistencias e inscripciones.\n"
