@@ -122,8 +122,8 @@ public class MateriaDAO {
                 + "FROM materias m JOIN horarios_materia h ON h.id_materia = m.id_materia "
                 + "JOIN inscripciones i ON i.id_materia = m.id_materia "
                 + "JOIN estudiantes e ON e.id_estudiante = i.id_estudiante "
-                + "WHERE e.matricula = ? AND h.dia_semana = ? AND h.hora_inicio <= ? AND h.hora_fin >= ? "
-                + "ORDER BY h.hora_inicio";
+                + "WHERE e.matricula = ? AND h.dia_semana = ? AND h.hora_inicio <= ? AND h.hora_fin > ? "
+                + "ORDER BY h.hora_inicio DESC";
         Connection cc = new conexion().conectar();
         if (cc == null) {
             ultimoError = "No hay conexión con MySQL.";

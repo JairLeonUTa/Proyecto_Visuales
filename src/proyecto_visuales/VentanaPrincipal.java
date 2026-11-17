@@ -305,7 +305,7 @@ public class VentanaPrincipal extends JFrame {
             String inicio = String.valueOf(h[3]).substring(0, 5);
             String fin = String.valueOf(h[4]).substring(0, 5);
             boolean esHoy = hoy.equals(h[2]);
-            boolean enClase = esHoy && hora.compareTo(inicio) >= 0 && hora.compareTo(fin) <= 0;
+            boolean enClase = esHoy && hora.compareTo(inicio) >= 0 && hora.compareTo(fin) < 0;
             String estado = enClase ? "En clase ahora" : esHoy ? "Hoy" : "";
             if (enClase && claseActual == null) {
                 claseActual = h[0] + " - " + h[1] + " (" + inicio + " a " + fin + ")";
