@@ -11,20 +11,28 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.TextStyle;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -220,7 +228,7 @@ public class VentanaPrincipal extends JFrame {
         List<Object[]> materias = MateriaDAO.materiasEnHorario(matricula, hoy.getDayOfWeek().name(), hora);
         if (materias.isEmpty()) {
             mostrarEstado("Fuera de horario: " + estudiante.getNombre() + " no tiene clase ahora ("
-                    + hoy.getDayOfWeek() + " " + hora + ").", COLOR_AVISO);
+                    + diaEnEspanol(hoy.getDayOfWeek().name()) + " " + hora + ").", COLOR_AVISO);
             return;
         }
         Object[] materia = materias.get(0);
@@ -261,17 +269,82 @@ public class VentanaPrincipal extends JFrame {
     private void mostrarHorario() {
         String matricula = txtMatricula.getText().trim();
         if (matricula.isEmpty()) {
-            mostrarEstado("Escriba una matrícula para ver su horario activo.", COLOR_AVISO);
+            mostrarEstado("Escriba una matrícula para ver su horario.", COLOR_AVISO);
+            JOptionPane.showMessageDialog(this, "Escriba la matrícula del estudiante para ver su horario.",
+                    "Horario", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String dia = LocalDate.now().getDayOfWeek().name();
+        Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
+        if (estudiante == null) {
+            mostrarEstado("Estudiante no registrado: " + matricula, COLOR_ERROR);
+            JOptionPane.showMessageDialog(this, "No existe un estudiante con matrícula " + matricula + ".",
+                    "Horario", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        List<Object[]> horario = MateriaDAO.horarioDeEstudiante(matricula);
+        if (horario.isEmpty()) {
+            String motivo = MateriaDAO.getUltimoError().isEmpty()
+                    ? estudiante.getNombre() + " no está inscrito en ninguna materia." : MateriaDAO.getUltimoError();
+            mostrarEstado(motivo, COLOR_AVISO);
+            JOptionPane.showMessageDialog(this, motivo, "Horario", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String hoy = LocalDate.now().getDayOfWeek().name();
         String hora = LocalTime.now().format(HORA);
-        List<Object[]> materias = MateriaDAO.materiasEnHorario(matricula, dia, hora);
-        if (materias.isEmpty()) {
-            mostrarEstado("Sin materia activa para " + matricula + " ahora (" + dia + " " + hora + ").", COLOR_AVISO);
-        } else {
-            Object[] m = materias.get(0);
-            mostrarEstado("Materia activa: " + m[0] + " - " + m[1] + " (" + m[3] + " a " + m[4] + ")", COLOR_OK);
+        DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Día", "Materia", "Inicio", "Fin", "Estado"}, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+        String claseActual = null;
+        int filaActual = -1;
+        for (Object[] h : horario) {
+            String inicio = String.valueOf(h[3]).substring(0, 5);
+            String fin = String.valueOf(h[4]).substring(0, 5);
+            boolean esHoy = hoy.equals(h[2]);
+            boolean enClase = esHoy && hora.compareTo(inicio) >= 0 && hora.compareTo(fin) <= 0;
+            String estado = enClase ? "En clase ahora" : esHoy ? "Hoy" : "";
+            if (enClase && claseActual == null) {
+                claseActual = h[0] + " - " + h[1] + " (" + inicio + " a " + fin + ")";
+                filaActual = modelo.getRowCount();
+            }
+            modelo.addRow(new Object[]{diaEnEspanol(String.valueOf(h[2])), h[0] + " - " + h[1], inicio, fin, estado});
+        }
+        JTable tablaHorario = new JTable(modelo);
+        tablaHorario.setRowHeight(22);
+        tablaHorario.getColumnModel().getColumn(1).setPreferredWidth(240);
+        if (filaActual >= 0) {
+            tablaHorario.setRowSelectionInterval(filaActual, filaActual);
+        }
+        JScrollPane scroll = new JScrollPane(tablaHorario);
+        scroll.setPreferredSize(new Dimension(620, Math.min(320, 40 + 22 * horario.size())));
+
+        JLabel lblAlumno = new JLabel("Estudiante: " + estudiante.getNombre() + " " + estudiante.getApellido()
+                + " (" + matricula + ")");
+        JLabel lblAhora = new JLabel(claseActual == null
+                ? "Ahora (" + diaEnEspanol(hoy) + " " + hora + "): no tiene clase, la asistencia no se puede registrar."
+                : "Ahora (" + diaEnEspanol(hoy) + " " + hora + "): tiene clase de " + claseActual + ".");
+        lblAhora.setForeground(claseActual == null ? COLOR_AVISO : COLOR_OK);
+        lblAhora.setFont(lblAhora.getFont().deriveFont(java.awt.Font.BOLD));
+        JPanel encabezado = new JPanel(new GridLayout(2, 1, 0, 4));
+        encabezado.add(lblAlumno);
+        encabezado.add(lblAhora);
+        JPanel contenido = new JPanel(new BorderLayout(0, 10));
+        contenido.add(encabezado, BorderLayout.NORTH);
+        contenido.add(scroll, BorderLayout.CENTER);
+
+        mostrarEstado(claseActual == null ? "Sin clase en este momento para " + matricula + "."
+                : "Clase actual: " + claseActual, claseActual == null ? COLOR_AVISO : COLOR_OK);
+        JOptionPane.showMessageDialog(this, contenido, "Horario semanal", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    static String diaEnEspanol(String dia) {
+        try {
+            String nombre = DayOfWeek.valueOf(dia).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("es"));
+            return Character.toUpperCase(nombre.charAt(0)) + nombre.substring(1);
+        } catch (IllegalArgumentException ex) {
+            return dia;
         }
     }
 
@@ -376,7 +449,7 @@ public class VentanaPrincipal extends JFrame {
             }
         });
 
-        btnHorario.setText("Ver horario activo");
+        btnHorario.setText("Ver horario");
         btnHorario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnHorarioActionPerformed(evt);

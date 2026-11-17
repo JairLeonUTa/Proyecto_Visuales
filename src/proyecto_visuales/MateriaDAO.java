@@ -151,6 +151,40 @@ public class MateriaDAO {
         return lista;
     }
 
+    public static List<Object[]> horarioDeEstudiante(String matricula) {
+        ultimoError = "";
+        List<Object[]> lista = new ArrayList<>();
+        String sql = "SELECT m.codigo, m.nombre, h.dia_semana, h.hora_inicio, h.hora_fin "
+                + "FROM materias m JOIN horarios_materia h ON h.id_materia = m.id_materia "
+                + "JOIN inscripciones i ON i.id_materia = m.id_materia "
+                + "JOIN estudiantes e ON e.id_estudiante = i.id_estudiante "
+                + "WHERE e.matricula = ? "
+                + "ORDER BY FIELD(h.dia_semana, 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', "
+                + "'SATURDAY', 'SUNDAY'), h.hora_inicio";
+        Connection cc = new conexion().conectar();
+        if (cc == null) {
+            ultimoError = "No hay conexión con MySQL.";
+            return lista;
+        }
+        try (cc; PreparedStatement pst = cc.prepareStatement(sql)) {
+            pst.setString(1, matricula);
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new Object[]{
+                        rs.getString("codigo"),
+                        rs.getString("nombre"),
+                        rs.getString("dia_semana"),
+                        rs.getString("hora_inicio"),
+                        rs.getString("hora_fin")
+                    });
+                }
+            }
+        } catch (SQLException ex) {
+            ultimoError = mensajeError("consultar el horario", ex);
+        }
+        return lista;
+    }
+
     /** Explica cómo resolver el error cuando la base todavía no tiene horarios_materia. */
     private static String mensajeError(String accion, SQLException ex) {
         String detalle = ex.getMessage() == null ? "" : ex.getMessage();

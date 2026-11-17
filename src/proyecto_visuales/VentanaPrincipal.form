@@ -130,7 +130,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnHorario">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Ver horario activo"/>
+        <Property name="text" type="java.lang.String" value="Ver horario"/>
       </Properties>
       <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnHorarioActionPerformed"/></Events>
     </Component>

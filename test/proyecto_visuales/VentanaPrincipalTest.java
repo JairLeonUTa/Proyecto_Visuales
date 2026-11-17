@@ -40,6 +40,7 @@ public class VentanaPrincipalTest {
         verificar(!VentanaPrincipal.esAtraso("08:05", "08:00:00"), "dentro de los 5 minutos de tolerancia no es atraso");
         verificar(VentanaPrincipal.esAtraso("08:06", "08:00:00"), "pasada la tolerancia es atraso");
         verificar(VentanaPrincipal.minutosTarde("08:12", "08:00:00") == 12, "calcula los minutos de atraso");
+        verificar("Miércoles".equals(VentanaPrincipal.diaEnEspanol("WEDNESDAY")), "muestra el día en español");
     }
 
     /** No falla si no hay webcam: solo informa cuántas detecta el equipo. */
@@ -61,6 +62,9 @@ public class VentanaPrincipalTest {
                     new HorarioMateria("TUESDAY", "08:00", "10:00"),
                     new HorarioMateria("THURSDAY", "08:00", "10:00"))), "crear materia de prueba");
             verificar(InscripcionDAO.inscribir(matricula, materia), "inscribir");
+            List<Object[]> horario = MateriaDAO.horarioDeEstudiante(matricula);
+            verificar(horario.size() == 2 && "TUESDAY".equals(horario.get(0)[2]) && "THURSDAY".equals(horario.get(1)[2]),
+                    "el horario semanal lista los días inscritos en orden");
             verificar(RegistroDAO.guardarRegistro(matricula, materia, LocalDate.now().toString(), "08:10", true),
                     "registrar asistencia");
             DefaultTableModel modelo = new DefaultTableModel(VentanaPrincipal.COLUMNAS, 0);
