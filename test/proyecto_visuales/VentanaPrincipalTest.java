@@ -36,8 +36,10 @@ public class VentanaPrincipalTest {
     static void probarReglasDeRegistro() {
         verificar("20230001".equals(VentanaPrincipal.extraerMatricula(" 20230001|Ana Pérez ")),
                 "usa solo la matrícula del contenido");
-        verificar(VentanaPrincipal.esAtraso("08:05", "08:00:00"), "llegar después del inicio es atraso");
         verificar(!VentanaPrincipal.esAtraso("08:00", "08:00:00"), "llegar a la hora no es atraso");
+        verificar(!VentanaPrincipal.esAtraso("08:05", "08:00:00"), "dentro de los 5 minutos de tolerancia no es atraso");
+        verificar(VentanaPrincipal.esAtraso("08:06", "08:00:00"), "pasada la tolerancia es atraso");
+        verificar(VentanaPrincipal.minutosTarde("08:12", "08:00:00") == 12, "calcula los minutos de atraso");
     }
 
     /** No falla si no hay webcam: solo informa cuántas detecta el equipo. */

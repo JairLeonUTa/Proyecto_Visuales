@@ -14,6 +14,7 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -33,12 +34,13 @@ import javax.swing.table.DefaultTableModel;
  * proyecto (Run Project); esta clase es la principal. "Iniciar cámara" muestra la
  * webcam y lee los QR generados en Administración; también se puede escribir la
  * matrícula y pulsar "Registrar manual". La asistencia solo se guarda si el estudiante
- * está inscrito en una materia que tiene clase en ese día y hora; llegar después de la
- * hora de inicio se marca como atraso.
+ * está inscrito en una materia que tiene clase en ese día y hora; se da una tolerancia de
+ * 5 minutos desde la hora de inicio y llegar después de ese margen se marca como atraso.
  */
 public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
+    static final int TOLERANCIA_ATRASO_MINUTOS = 5;
     static final Object[] COLUMNAS = {"#", "Matrícula", "Estudiante", "Materia", "Fecha", "Hora", "Atraso"};
 
     private Webcam webcam;
@@ -201,10 +203,11 @@ public class VentanaPrincipal extends JFrame {
         }
         Object[] materia = materias.get(0);
         String codigo = String.valueOf(materia[0]);
-        boolean atraso = esAtraso(hora, String.valueOf(materia[3]));
+        String inicio = String.valueOf(materia[3]);
+        boolean atraso = esAtraso(hora, inicio);
         if (RegistroDAO.guardarRegistro(matricula, codigo, hoy.toString(), hora, atraso)) {
             lblEstado.setText("Asistencia registrada: " + estudiante.getNombre() + " " + estudiante.getApellido()
-                    + " - " + codigo + (atraso ? " (atraso)" : ""));
+                    + " - " + codigo + (atraso ? " (atraso de " + minutosTarde(hora, inicio) + " min)" : " (a tiempo)"));
         } else {
             lblEstado.setText("No se registró: " + RegistroDAO.getUltimoError());
         }
@@ -219,11 +222,17 @@ public class VentanaPrincipal extends JFrame {
         return contenido.trim().split("\\|", 2)[0].trim();
     }
 
-    /** Hay atraso cuando la hora de entrada es posterior a la hora de inicio de la clase. */
+    /** Hay atraso cuando la hora de entrada pasa la hora de inicio más la tolerancia de 5 minutos. */
     static boolean esAtraso(String horaEntrada, String horaInicio) {
         LocalTime entrada = LocalTime.parse(horaEntrada.substring(0, 5));
         LocalTime inicio = LocalTime.parse(horaInicio.substring(0, 5));
-        return entrada.isAfter(inicio);
+        return entrada.isAfter(inicio.plusMinutes(TOLERANCIA_ATRASO_MINUTOS));
+    }
+
+    static long minutosTarde(String horaEntrada, String horaInicio) {
+        LocalTime entrada = LocalTime.parse(horaEntrada.substring(0, 5));
+        LocalTime inicio = LocalTime.parse(horaInicio.substring(0, 5));
+        return Math.max(0, Duration.between(inicio, entrada).toMinutes());
     }
 
     private void mostrarHorario() {
