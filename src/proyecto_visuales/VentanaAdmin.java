@@ -28,6 +28,7 @@ public class VentanaAdmin extends JFrame {
 
     public VentanaAdmin() {
         initComponents();
+        lblEstado.setFont(lblEstado.getFont().deriveFont(java.awt.Font.BOLD, lblEstado.getFont().getSize() + 1f));
         cargarMaterias();
         cargarEstudiantes();
         actualizarTextoDias();
@@ -53,7 +54,8 @@ public class VentanaAdmin extends JFrame {
             lblQr.setText("");
             lblQr.setIcon(new ImageIcon(new ImageIcon(archivo.getAbsolutePath()).getImage()
                     .getScaledInstance(180, 180, Image.SCALE_SMOOTH)));
-            mostrarEstado("Estudiante creado. QR guardado en: " + archivo.getAbsolutePath());
+            mostrarEstado("Estudiante creado. QR guardado en qrs/" + archivo.getName());
+            lblEstado.setToolTipText(archivo.getAbsolutePath());
         } catch (Exception ex) {
             mostrarEstado("Estudiante creado, pero no se pudo generar el QR: " + ex.getMessage());
         }
@@ -124,7 +126,7 @@ public class VentanaAdmin extends JFrame {
             if (texto.length() > 0) {
                 texto.append(", ");
             }
-            texto.append(h.diaSemana(), 0, 3).append(' ').append(h.horaInicio()).append('-').append(h.horaFin());
+            texto.append(VentanaPrincipal.diaEnEspanol(h.diaSemana()), 0, 3).append(' ').append(h.horaInicio()).append('-').append(h.horaFin());
         }
         lblDiasSeleccionados.setText(texto.toString());
     }
@@ -171,7 +173,8 @@ public class VentanaAdmin extends JFrame {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().open(carpeta.toFile());
             } else {
-                mostrarEstado("Los QR se guardan en: " + carpeta.toAbsolutePath());
+                mostrarEstado("Los QR se guardan en la carpeta qrs del proyecto.");
+                lblEstado.setToolTipText(carpeta.toAbsolutePath().toString());
             }
         } catch (Exception ex) {
             mostrarEstado("No se pudo abrir la carpeta de QR: " + ex.getMessage());
@@ -180,6 +183,7 @@ public class VentanaAdmin extends JFrame {
 
     private void mostrarEstado(String mensaje) {
         lblEstado.setText(mensaje);
+        lblEstado.setToolTipText(mensaje);
     }
 
     /** Elemento del combo de materias: muestra "código - nombre". */
@@ -372,12 +376,12 @@ public class VentanaAdmin extends JFrame {
                             .addComponent(lblHorario)
                             .addComponent(btnCrearMateria)
                             .addComponent(lblInscripcion)
-                            .addComponent(lblEstado)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnCrearEstudiante)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnAbrirQR)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(lblEstado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(

@@ -31,7 +31,7 @@ public final class SelectorHorarios {
         panel.add(new JLabel("Hasta (HH:mm)"));
         for (int i = 0; i < dias.size(); i++) {
             HorarioMateria actual = buscar(actuales, dias.get(i));
-            casillas[i] = new JCheckBox(dias.get(i), actual != null);
+            casillas[i] = new JCheckBox(VentanaPrincipal.diaEnEspanol(dias.get(i)), actual != null);
             inicios[i] = new JTextField(actual != null ? actual.horaInicio() : "08:00", 6);
             fines[i] = new JTextField(actual != null ? actual.horaFin() : "10:00", 6);
             panel.add(casillas[i]);
@@ -78,7 +78,7 @@ public final class SelectorHorarios {
         }
         for (HorarioMateria h : seleccion) {
             if (!ValidadorHorarios.horarioValido(h.horaInicio(), h.horaFin())) {
-                return "Horario inválido el " + h.diaSemana()
+                return "Horario inválido el " + VentanaPrincipal.diaEnEspanol(h.diaSemana())
                         + ": use HH:mm y una hora de inicio anterior a la de fin.";
             }
         }

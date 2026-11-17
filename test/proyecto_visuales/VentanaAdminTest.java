@@ -27,7 +27,7 @@ public class VentanaAdminTest {
                 "el selector pide dos días");
         verificar(SelectorHorarios.validar(List.of(
                 new HorarioMateria("MONDAY", "08:00", "10:00"),
-                new HorarioMateria("FRIDAY", "15:00", "13:00"))).contains("FRIDAY"),
+                new HorarioMateria("FRIDAY", "15:00", "13:00"))).contains("Viernes"),
                 "el selector indica qué día tiene el rango inválido");
         System.out.println("OK: validaciones de la ventana de administración superadas");
     }
