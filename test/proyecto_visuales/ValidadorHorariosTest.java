@@ -33,6 +33,13 @@ public class ValidadorHorariosTest {
         verificar(ValidadorHorarios.horarioValido("18:00", "20:00"), "se aceptan clases hasta las 20:00");
         verificar("07:00".equals(ValidadorHorarios.normalizarHora(" 7:00 ")), "7:00 se completa como 07:00");
         verificar("14:00".equals(ValidadorHorarios.normalizarHora("14:00")), "14:00 no cambia");
+        verificar("07:00".equals(ValidadorHorarios.HORAS_CLASE.get(0)), "la lista de horas empieza a las 7:00 AM");
+        verificar("20:00".equals(ValidadorHorarios.HORAS_CLASE.get(ValidadorHorarios.HORAS_CLASE.size() - 1)),
+                "la lista de horas termina a las 8:00 PM");
+        verificar(ValidadorHorarios.HORAS_CLASE.size() == 27, "hay horas cada media hora");
+        verificar("7:00 AM".equals(ValidadorHorarios.horaAmPm("07:00")), "las horas de la mañana salen con AM");
+        verificar("2:30 PM".equals(ValidadorHorarios.horaAmPm("14:30:00")), "las horas de la tarde salen con PM");
+        verificar("12:00 PM".equals(ValidadorHorarios.horaAmPm("12:00")), "el mediodía sale como 12:00 PM");
         verificar(!ValidadorHorarios.horarioValido("10:00", "08:00"), "el inicio va antes del fin");
         verificar(!ValidadorHorarios.horarioValido("ocho", "10:00"), "el formato HH:mm es obligatorio");
         verificar(ValidadorHorarios.horariosValidos(List.of(

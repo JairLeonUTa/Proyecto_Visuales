@@ -1,7 +1,10 @@
 package proyecto_visuales;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /** Reglas de los horarios de una materia. */
 public final class ValidadorHorarios {
@@ -10,7 +13,27 @@ public final class ValidadorHorarios {
     public static final List<String> DIAS_LABORABLES =
             List.of("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY");
 
+    public static final List<String> HORAS_CLASE = horasClase();
+
+    private static final DateTimeFormatter AM_PM = DateTimeFormatter.ofPattern("h:mm a", Locale.US);
+
     private ValidadorHorarios() {
+    }
+
+    private static List<String> horasClase() {
+        List<String> horas = new ArrayList<>();
+        for (LocalTime t = LocalTime.of(7, 0); !t.isAfter(LocalTime.of(20, 0)); t = t.plusMinutes(30)) {
+            horas.add(t.toString());
+        }
+        return List.copyOf(horas);
+    }
+
+    public static String horaAmPm(String hora) {
+        try {
+            return LocalTime.parse(normalizarHora(hora).substring(0, 5)).format(AM_PM);
+        } catch (RuntimeException ex) {
+            return hora;
+        }
     }
 
     /** Una materia necesita al menos dos días distintos, todos de lunes a viernes. */

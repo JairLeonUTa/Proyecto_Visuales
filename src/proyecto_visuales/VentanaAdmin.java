@@ -236,7 +236,8 @@ public class VentanaAdmin extends JFrame {
             if (texto.length() > 0) {
                 texto.append(", ");
             }
-            texto.append(VentanaPrincipal.diaEnEspanol(h.diaSemana()), 0, 3).append(' ').append(h.horaInicio()).append('-').append(h.horaFin());
+            texto.append(VentanaPrincipal.diaEnEspanol(h.diaSemana()), 0, 3).append(' ')
+                    .append(ValidadorHorarios.horaAmPm(h.horaInicio())).append(" - ").append(ValidadorHorarios.horaAmPm(h.horaFin()));
         }
         lblDiasSeleccionados.setText(texto.toString());
     }

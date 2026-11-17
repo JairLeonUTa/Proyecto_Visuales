@@ -317,10 +317,12 @@ public class VentanaPrincipal extends JFrame {
             boolean enClase = esHoy && hora.compareTo(inicio) >= 0 && hora.compareTo(fin) < 0;
             String estado = enClase ? "En clase ahora" : esHoy ? "Hoy" : "";
             if (enClase && claseActual == null) {
-                claseActual = h[0] + " - " + h[1] + " (" + inicio + " a " + fin + ")";
+                claseActual = h[0] + " - " + h[1] + " (" + ValidadorHorarios.horaAmPm(inicio) + " a "
+                        + ValidadorHorarios.horaAmPm(fin) + ")";
                 filaActual = modelo.getRowCount();
             }
-            modelo.addRow(new Object[]{diaEnEspanol(String.valueOf(h[2])), h[0] + " - " + h[1], inicio, fin, estado});
+            modelo.addRow(new Object[]{diaEnEspanol(String.valueOf(h[2])), h[0] + " - " + h[1],
+                ValidadorHorarios.horaAmPm(inicio), ValidadorHorarios.horaAmPm(fin), estado});
         }
         JTable tablaHorario = new JTable(modelo);
         tablaHorario.setRowHeight(22);
