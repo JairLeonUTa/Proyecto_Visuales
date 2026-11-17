@@ -33,6 +33,14 @@ public final class ValidadorHorarios {
         }
     }
 
+    public static String normalizarHora(String texto) {
+        String hora = texto == null ? "" : texto.trim();
+        if (hora.matches("\\d:\\d{2}")) {
+            return "0" + hora;
+        }
+        return hora;
+    }
+
     /** Cada día elegido debe ser laborable, no repetirse y tener su propio rango válido. */
     public static boolean horariosValidos(List<HorarioMateria> horarios) {
         return horarios != null && horarios.stream().allMatch(h -> h != null)

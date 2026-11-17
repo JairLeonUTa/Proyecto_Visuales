@@ -29,6 +29,10 @@ public class ValidadorHorariosTest {
 
     static void probarHorariosPorDia() {
         verificar(ValidadorHorarios.horarioValido("08:00", "10:00"), "08:00-10:00 es válido");
+        verificar(ValidadorHorarios.horarioValido("07:00", "09:00"), "se aceptan clases desde las 07:00");
+        verificar(ValidadorHorarios.horarioValido("18:00", "20:00"), "se aceptan clases hasta las 20:00");
+        verificar("07:00".equals(ValidadorHorarios.normalizarHora(" 7:00 ")), "7:00 se completa como 07:00");
+        verificar("14:00".equals(ValidadorHorarios.normalizarHora("14:00")), "14:00 no cambia");
         verificar(!ValidadorHorarios.horarioValido("10:00", "08:00"), "el inicio va antes del fin");
         verificar(!ValidadorHorarios.horarioValido("ocho", "10:00"), "el formato HH:mm es obligatorio");
         verificar(ValidadorHorarios.horariosValidos(List.of(

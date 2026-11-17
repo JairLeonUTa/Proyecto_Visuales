@@ -47,7 +47,8 @@ public final class SelectorHorarios {
             List<HorarioMateria> seleccion = new ArrayList<>();
             for (int i = 0; i < dias.size(); i++) {
                 if (casillas[i].isSelected()) {
-                    seleccion.add(new HorarioMateria(dias.get(i), inicios[i].getText().trim(), fines[i].getText().trim()));
+                    seleccion.add(new HorarioMateria(dias.get(i), ValidadorHorarios.normalizarHora(inicios[i].getText()),
+                            ValidadorHorarios.normalizarHora(fines[i].getText())));
                 }
             }
             String error = validar(seleccion);
