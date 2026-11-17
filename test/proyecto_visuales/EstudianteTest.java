@@ -4,13 +4,13 @@ public class EstudianteTest {
 
     public static void main(String[] args) {
         Estudiante est = new Estudiante("20230001", "Ana", "Pérez", "ana@uta.edu.ec");
-        verificar("20230001".equals(est.getMatricula()), "el constructor guarda la matrícula");
+        verificar("20230001".equals(est.getMatricula()), "el constructor guarda la cédula");
         verificar("Ana".equals(est.getNombre()), "el constructor guarda el nombre");
         verificar("Pérez".equals(est.getApellido()), "el apellido va separado del nombre");
         verificar("ana@uta.edu.ec".equals(est.getEmail()), "el constructor guarda el email");
 
         Estudiante vacio = new Estudiante();
-        verificar(vacio.getMatricula() == null, "un estudiante nuevo no tiene matrícula");
+        verificar(vacio.getMatricula() == null, "un estudiante nuevo no tiene cédula");
         vacio.setMatricula("20230002");
         vacio.setNombre("Luis");
         vacio.setApellido("Mora");

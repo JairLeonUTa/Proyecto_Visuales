@@ -62,7 +62,7 @@ public class RegistroDAOTest {
         verificar(RegistroDAO.guardarRegistro(MATRICULA, MATERIA, hoy, "08:20", true), "registrar asistencia");
         verificar(!RegistroDAO.guardarRegistro("TEST-NADIE", MATERIA, hoy, "08:20", false),
                 "no registra a un estudiante inexistente");
-        verificar(RegistroDAO.listarRegistrosPorMatricula(MATRICULA, 10).size() == 1, "filtra por matrícula");
+        verificar(RegistroDAO.listarRegistrosPorMatricula(MATRICULA, 10).size() == 1, "filtra por cédula");
         verificar(RegistroDAO.listarRegistrosPorFecha(hoy, 500).stream().anyMatch(f -> MATRICULA.equals(f[1])),
                 "filtra por fecha");
         Object[] porcentaje = RegistroDAO.porcentajePorEstudiante(MATRICULA, 8).get(0);

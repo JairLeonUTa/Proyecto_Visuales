@@ -46,7 +46,7 @@ public class EstudianteDAO {
         return est;
     }
 
-    /** Busca por matrícula; devuelve null si no existe o si la consulta falló. */
+    /** Busca por cédula; devuelve null si no existe o si la consulta falló. */
     public static Estudiante buscarEstudiantePorMatricula(String matricula) {
         ultimoError = "";
         try (Connection cc = abrirConexion();
@@ -80,14 +80,14 @@ public class EstudianteDAO {
     }
 
     /**
-     * Guarda un estudiante nuevo. Matrícula, nombre y apellido son obligatorios;
-     * devuelve false si faltan datos, si la matrícula ya existe o si falla MySQL.
+     * Guarda un estudiante nuevo. Cédula, nombre y apellido son obligatorios;
+     * devuelve false si faltan datos, si la cédula ya existe o si falla MySQL.
      */
     public static boolean guardarEstudiante(Estudiante estudiante) {
         ultimoError = "";
         if (estudiante == null || vacio(estudiante.getMatricula())
                 || vacio(estudiante.getNombre()) || vacio(estudiante.getApellido())) {
-            ultimoError = "Matrícula, nombre y apellido son obligatorios.";
+            ultimoError = "Cédula, nombre y apellido son obligatorios.";
             return false;
         }
         String sql = "insert into estudiantes(matricula,nombre,apellido,email) values (?,?,?,?)";
@@ -100,7 +100,7 @@ public class EstudianteDAO {
             return pst.executeUpdate() > 0;
         } catch (SQLException ex) {
             if (ex.getErrorCode() == 1062) {
-                ultimoError = "La matrícula " + estudiante.getMatricula().trim() + " ya está registrada.";
+                ultimoError = "La cédula " + estudiante.getMatricula().trim() + " ya está registrada.";
             } else {
                 ultimoError = "Error al guardar estudiante: " + ex.getMessage();
             }
@@ -108,7 +108,7 @@ public class EstudianteDAO {
         }
     }
 
-    /** Actualiza nombre, apellido y email del estudiante con esa matrícula. */
+    /** Actualiza nombre, apellido y email del estudiante con esa cédula. */
     public static boolean actualizarEstudiante(Estudiante est) {
         ultimoError = "";
         if (est == null || vacio(est.getNombre()) || vacio(est.getApellido())) {
@@ -124,7 +124,7 @@ public class EstudianteDAO {
             pst.setString(4, est.getMatricula());
             int n = pst.executeUpdate();
             if (n == 0) {
-                ultimoError = "No existe un estudiante con matrícula " + est.getMatricula() + ".";
+                ultimoError = "No existe un estudiante con cédula " + est.getMatricula() + ".";
             }
             return n > 0;
         } catch (SQLException ex) {
@@ -156,7 +156,7 @@ public class EstudianteDAO {
                 }
                 cc.commit();
                 if (n == 0) {
-                    ultimoError = "No existe un estudiante con matrícula " + matricula + ".";
+                    ultimoError = "No existe un estudiante con cédula " + matricula + ".";
                 }
                 return n > 0;
             } catch (SQLException ex) {

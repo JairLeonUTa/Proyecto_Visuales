@@ -6,7 +6,7 @@
 
 ## 1. Objetivo — 0:00 a 1:00
 
-“Nuestro proyecto es una aplicación de escritorio que permite controlar la asistencia de estudiantes mediante códigos QR. También admite el registro manual de la matrícula.
+“Nuestro proyecto es una aplicación de escritorio que permite controlar la asistencia de estudiantes mediante códigos QR. También admite el registro manual de la cédula.
 
 El sistema permite crear estudiantes, generar sus QR, crear materias con horarios, realizar inscripciones y consultar asistencias, atrasos y porcentajes.
 
@@ -24,7 +24,7 @@ Usuario → Ventanas → DAO → Conexión JDBC → MySQL
 |---|---|
 | `VentanaPrincipal.java` | Cámara, registro manual, horarios y reportes. |
 | `VentanaAdmin.java` | Crear, actualizar y eliminar estudiantes; generar QR, materias e inscripciones. |
-| `Estudiante.java` | Modelo con matrícula, nombre, apellido y email. |
+| `Estudiante.java` | Modelo con cédula, nombre, apellido y email. |
 | `HorarioMateria.java` | `record` con día, hora de inicio y hora de fin. |
 | `EstudianteDAO.java` | Crear, buscar, listar, actualizar y eliminar estudiantes. |
 | `MateriaDAO.java` | Guardar materias y consultar sus horarios. |
@@ -44,7 +44,7 @@ Usuario → Ventanas → DAO → Conexión JDBC → MySQL
 
 | Tabla | Información |
 |---|---|
-| `estudiantes` | Datos personales y matrícula única. |
+| `estudiantes` | Datos personales y cédula única. |
 | `materias` | Código, nombre y un horario conservado en sus columnas. |
 | `horarios_materia` | Todos los días y horarios de cada materia. |
 | `inscripciones` | Relación entre estudiantes y materias. |
@@ -52,7 +52,7 @@ Usuario → Ventanas → DAO → Conexión JDBC → MySQL
 
 “Un estudiante puede inscribirse en varias materias y una materia puede tener varios estudiantes. Cada materia tiene varios horarios.
 
-La base utiliza claves foráneas para mantener las relaciones y restricciones únicas para impedir matrículas, inscripciones y asistencias duplicadas.”
+La base utiliza claves foráneas para mantener las relaciones y restricciones únicas para impedir cédulas, inscripciones y asistencias duplicadas.”
 
 **Regla clave:** solo una asistencia por estudiante, materia y fecha.
 
@@ -60,13 +60,13 @@ La base utiliza claves foráneas para mantener las relaciones y restricciones ú
 
 ## 4. Administración y validaciones — 3:00 a 4:00
 
-“Primero se crea el estudiante. Matrícula, nombre y apellido son obligatorios; el email es opcional. Después se genera un QR que contiene únicamente su matrícula y se guarda como imagen PNG en `qrs/`.
+“Primero se crea el estudiante. Cédula, nombre y apellido son obligatorios; el email es opcional. Después se genera un QR que contiene únicamente su cédula y se guarda como imagen PNG en `qrs/`.
 
 Luego se crea una materia con al menos dos días distintos de lunes a viernes. Cada día tiene su propio horario y la hora de inicio debe ser anterior a la de fin.
 
 Finalmente se inscribe al estudiante en la materia. Crear al estudiante no significa que ya esté inscrito.”
 
-“También se puede seleccionar un estudiante para actualizar sus datos o eliminarlo con confirmación. La matrícula no cambia al actualizar. Eliminar borra permanentemente al estudiante, sus asistencias e inscripciones; se advierte antes de confirmar. La opción Nuevo estudiante permite volver al modo de creación.”
+“También se puede seleccionar un estudiante para actualizar sus datos o eliminarlo con confirmación. La cédula no cambia al actualizar. Eliminar borra permanentemente al estudiante, sus asistencias e inscripciones; se advierte antes de confirmar. La opción Nuevo estudiante permite volver al modo de creación.”
 
 **Integridad:** la materia y sus horarios se guardan en una transacción: si falla una parte, se ejecuta `rollback` para deshacer la operación.
 
@@ -77,7 +77,7 @@ Finalmente se inscribe al estudiante en la materia. Crear al estudiante no signi
 Tanto la lectura de cámara como el registro manual llaman al mismo método: `procesarQR()`.”
 
 ```text
-Obtener matrícula
+Obtener cédula
        ↓
 Buscar estudiante
        ↓
@@ -101,7 +101,7 @@ Existe una tolerancia de cinco minutos: si la clase empieza a las 08:00, llegar 
 | 08:06 | Asistencia con atraso. |
 | 10:01 | Fuera de horario. |
 
-“Para evitar lecturas continuas, se ignora la misma matrícula durante 2,5 segundos. Además, el DAO verifica duplicados y MySQL tiene una restricción única.”
+“Para evitar lecturas continuas, se ignora la misma cédula durante 2,5 segundos. Además, el DAO verifica duplicados y MySQL tiene una restricción única.”
 
 **Separación importante:** la ventana comprueba el horario y calcula el atraso. `RegistroDAO` verifica estudiante, materia, inscripción y duplicado antes de insertar.
 
@@ -133,7 +133,7 @@ La lectura de cámara utiliza un hilo separado y las actualizaciones de Swing se
 **Limitaciones actuales:**
 
 - No hay inicio de sesión para Administración.
-- Un QR se puede copiar: identifica una matrícula, no verifica identidad.
+- Un QR se puede copiar: identifica una cédula, no verifica identidad.
 - No se detectan cruces de horarios; se toma la primera materia encontrada.
 - Algunas consultas pueden bloquear temporalmente la interfaz.
 
@@ -150,7 +150,7 @@ La lectura de cámara utiliza un hilo separado y las actualizaciones de Swing se
 ### Recorrido en vivo
 
 1. Mostrar Administración: selector de estudiantes, botones de actualizar y eliminar, materia e inscripción.
-2. Volver a la ventana principal y registrar con QR o matrícula.
+2. Volver a la ventana principal y registrar con QR o cédula.
 3. Señalar el registro y el indicador de atraso.
 4. Esperar más de 2,5 segundos y repetir para mostrar el rechazo del duplicado.
 5. Abrir el horario y el reporte de asistencia.
@@ -171,7 +171,7 @@ Como mejoras futuras proponemos autenticación, detección de cruces de horarios
 
 **¿Qué contiene el QR?**
 
-Solo la matrícula. Los demás datos se consultan en MySQL.
+Solo la cédula. Los demás datos se consultan en MySQL.
 
 **¿Por qué usar DAO?**
 

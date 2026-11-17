@@ -42,7 +42,7 @@ public class VentanaAdmin extends JFrame {
         String nombre = txtNombre.getText().trim();
         String apellido = txtApellido.getText().trim();
         if (matricula.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
-            mostrarEstado("Matrícula, nombre y apellido son obligatorios.");
+            mostrarEstado("Cédula, nombre y apellido son obligatorios.");
             return;
         }
         Estudiante estudiante = new Estudiante(matricula, nombre, apellido, txtEmail.getText().trim());
@@ -116,7 +116,7 @@ public class VentanaAdmin extends JFrame {
         }
         cargarEstudiantes();
         seleccionarEstudiante(item.matricula);
-        mostrarEstado("Estudiante actualizado. La matrícula y su QR no cambian.");
+        mostrarEstado("Estudiante actualizado. La cédula y su QR no cambian.");
     }
 
     private void eliminarEstudiante() {
@@ -142,7 +142,7 @@ public class VentanaAdmin extends JFrame {
         }
     }
 
-    /** Genera qrs/qr_MATRICULA.png con la matrícula como contenido del QR. */
+    /** Genera qrs/qr_MATRICULA.png con la cédula como contenido del QR. */
     static File generarQR(String matricula) throws Exception {
         Path carpeta = Paths.get("qrs");
         Files.createDirectories(carpeta);
@@ -293,7 +293,7 @@ public class VentanaAdmin extends JFrame {
         }
     }
 
-    /** Elemento del combo de estudiantes: muestra "matrícula - nombre". */
+    /** Elemento del combo de estudiantes: muestra "cédula - nombre". */
     public static final class EstudianteItem {
         private final String matricula;
         private final String nombre;
@@ -363,7 +363,7 @@ public class VentanaAdmin extends JFrame {
             }
         });
 
-        lblMatricula.setText("Matrícula:");
+        lblMatricula.setText("Cédula:");
 
         lblNombre.setText("Nombre:");
 

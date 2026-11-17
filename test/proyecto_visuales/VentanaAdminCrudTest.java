@@ -60,7 +60,7 @@ public class VentanaAdminCrudTest {
             JLabel estado = campo(ventana, "lblEstado", JLabel.class);
             verificar(crear.isEnabled() && !actualizar.isEnabled() && !eliminar.isEnabled(), "estado de creación");
             seleccionar(selector, id);
-            verificar(id.equals(matricula.getText()) && !matricula.isEditable(), "matrícula cargada y protegida");
+            verificar(id.equals(matricula.getText()) && !matricula.isEditable(), "cédula cargada y protegida");
             verificar("Ana".equals(nombre.getText()) && "Prueba".equals(apellido.getText())
                     && email.getText().isEmpty(), "carga todos los datos");
             verificar(!crear.isEnabled() && actualizar.isEnabled() && eliminar.isEnabled(), "estado de edición");

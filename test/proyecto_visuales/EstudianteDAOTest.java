@@ -21,7 +21,7 @@ public class EstudianteDAOTest {
                 matricula, "Ana", "Prueba", "ana@prueba.com");
         try {
             Estudiante est = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
-            verificar(est != null, "debe encontrar la matrícula insertada");
+            verificar(est != null, "debe encontrar la cédula insertada");
             verificar("Ana".equals(est.getNombre()) && "Prueba".equals(est.getApellido()),
                     "nombre y apellido llegan en campos separados");
         } finally {
@@ -70,8 +70,8 @@ public class EstudianteDAOTest {
         int antes = EstudianteDAO.cargarEstudiantes().size();
         verificar(EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Carla", "Ruiz", "")), "crear");
         verificar(!EstudianteDAO.guardarEstudiante(new Estudiante(matricula, "Otra", "Persona", "")),
-                "la matrícula es única");
-        verificar(EstudianteDAO.getUltimoError().contains("ya está registrada"), "avisa la matrícula duplicada");
+                "la cédula es única");
+        verificar(EstudianteDAO.getUltimoError().contains("ya está registrada"), "avisa la cédula duplicada");
         verificar(!EstudianteDAO.guardarEstudiante(new Estudiante("TEST-SIN-NOMBRE", "", "Ruiz", "")),
                 "el nombre es obligatorio");
         verificar(EstudianteDAO.cargarEstudiantes().size() == antes + 1, "listar incluye al nuevo");

@@ -131,7 +131,7 @@ public class RegistroDAO {
 
     /**
      * Últimos registros, del más reciente al más antiguo, como filas para la tabla:
-     * {#, matrícula, estudiante, materia, fecha, hora, atraso}.
+     * {#, cédula, estudiante, materia, fecha, hora, atraso}.
      */
     public static List<Object[]> listarRegistros(int limite) {
         return consultarRegistros("", null, limite);

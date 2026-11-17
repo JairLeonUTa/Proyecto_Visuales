@@ -211,7 +211,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lblMatricula">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Matr&#xed;cula:"/>
+        <Property name="text" type="java.lang.String" value="C&#xe9;dula:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtMatricula">

@@ -27,7 +27,7 @@ public class VentanaPrincipalTest {
     static void probarLecturaQR() throws Exception {
         BufferedImage imagen = MatrixToImageWriter.toBufferedImage(
                 new QRCodeWriter().encode("20230001", BarcodeFormat.QR_CODE, 320, 320));
-        verificar("20230001".equals(VentanaPrincipal.decodificarQR(imagen)), "lee la matrícula del QR");
+        verificar("20230001".equals(VentanaPrincipal.decodificarQR(imagen)), "lee la cédula del QR");
         verificar(VentanaPrincipal.decodificarQR(new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB)) == null,
                 "una imagen sin QR no devuelve nada");
         verificar(VentanaPrincipal.decodificarQR(null) == null, "sin imagen de cámara no falla");
@@ -35,7 +35,7 @@ public class VentanaPrincipalTest {
 
     static void probarReglasDeRegistro() {
         verificar("20230001".equals(VentanaPrincipal.extraerMatricula(" 20230001|Ana Pérez ")),
-                "usa solo la matrícula del contenido");
+                "usa solo la cédula del contenido");
         verificar(!VentanaPrincipal.esAtraso("08:00", "08:00:00"), "llegar a la hora no es atraso");
         verificar(!VentanaPrincipal.esAtraso("08:05", "08:00:00"), "dentro de los 5 minutos de tolerancia no es atraso");
         verificar(VentanaPrincipal.esAtraso("08:06", "08:00:00"), "pasada la tolerancia es atraso");

@@ -44,7 +44,7 @@ import javax.swing.table.DefaultTableModel;
  * Ejecución: abrir el proyecto en NetBeans, encender MySQL en XAMPP y ejecutar el
  * proyecto (Run Project); esta clase es la principal. "Iniciar cámara" muestra la
  * webcam y lee los QR generados en Administración; también se puede escribir la
- * matrícula y pulsar "Registrar manual". La asistencia solo se guarda si el estudiante
+ * cédula y pulsar "Registrar manual". La asistencia solo se guarda si el estudiante
  * está inscrito en una materia que tiene clase en ese día y hora; se da una tolerancia de
  * 5 minutos desde la hora de inicio y llegar después de ese margen se marca como atraso.
  */
@@ -56,7 +56,7 @@ public class VentanaPrincipal extends JFrame {
     private static final Color COLOR_AVISO = new Color(204, 102, 0);
     private static final Color COLOR_ERROR = new Color(192, 0, 0);
     private static final Color COLOR_INFO = new Color(51, 51, 51);
-    static final Object[] COLUMNAS = {"#", "Matrícula", "Estudiante", "Materia", "Fecha", "Hora", "Atraso"};
+    static final Object[] COLUMNAS = {"#", "Cédula", "Estudiante", "Materia", "Fecha", "Hora", "Atraso"};
 
     private Webcam webcam;
     private WebcamPanel webcamPanel;
@@ -202,7 +202,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     /**
-     * Registra la asistencia de la matrícula leída: el estudiante debe existir y tener
+     * Registra la asistencia de la cédula leída: el estudiante debe existir y tener
      * clase en una materia inscrita en este momento. Ignora la misma lectura repetida
      * durante 2,5 segundos para no registrar dos veces el mismo QR.
      */
@@ -247,7 +247,7 @@ public class VentanaPrincipal extends JFrame {
         actualizarVista();
     }
 
-    /** El QR contiene la matrícula; si trae más datos separados por "|", se usa solo el primero. */
+    /** El QR contiene la cédula; si trae más datos separados por "|", se usa solo el primero. */
     static String extraerMatricula(String contenido) {
         if (contenido == null) {
             return "";
@@ -271,15 +271,15 @@ public class VentanaPrincipal extends JFrame {
     private void mostrarHorario() {
         String matricula = txtMatricula.getText().trim();
         if (matricula.isEmpty()) {
-            mostrarEstado("Escriba una matrícula para ver su horario.", COLOR_AVISO);
-            JOptionPane.showMessageDialog(this, "Escriba la matrícula del estudiante para ver su horario.",
+            mostrarEstado("Escriba una cédula para ver su horario.", COLOR_AVISO);
+            JOptionPane.showMessageDialog(this, "Escriba la cédula del estudiante para ver su horario.",
                     "Horario", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
         if (estudiante == null) {
             mostrarEstado("Estudiante no registrado: " + matricula, COLOR_ERROR);
-            JOptionPane.showMessageDialog(this, "No existe un estudiante con matrícula " + matricula + ".",
+            JOptionPane.showMessageDialog(this, "No existe un estudiante con cédula " + matricula + ".",
                     "Horario", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -344,15 +344,15 @@ public class VentanaPrincipal extends JFrame {
     private void mostrarReporte() {
         String matricula = txtMatricula.getText().trim();
         if (matricula.isEmpty()) {
-            mostrarEstado("Escriba una matrícula para ver su reporte.", COLOR_AVISO);
-            JOptionPane.showMessageDialog(this, "Escriba la matrícula del estudiante para ver su reporte.",
+            mostrarEstado("Escriba una cédula para ver su reporte.", COLOR_AVISO);
+            JOptionPane.showMessageDialog(this, "Escriba la cédula del estudiante para ver su reporte.",
                     "Reporte de asistencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Estudiante estudiante = EstudianteDAO.buscarEstudiantePorMatricula(matricula);
         if (estudiante == null) {
             mostrarEstado("Estudiante no registrado: " + matricula, COLOR_ERROR);
-            JOptionPane.showMessageDialog(this, "No existe un estudiante con matrícula " + matricula + ".",
+            JOptionPane.showMessageDialog(this, "No existe un estudiante con cédula " + matricula + ".",
                     "Reporte de asistencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -509,7 +509,7 @@ public class VentanaPrincipal extends JFrame {
             }
         });
 
-        lblMatricula.setText("Matrícula:");
+        lblMatricula.setText("Cédula:");
 
         txtMatricula.setText("20230001");
         txtMatricula.addActionListener(new java.awt.event.ActionListener() {
@@ -566,7 +566,7 @@ public class VentanaPrincipal extends JFrame {
 
             },
             new String [] {
-                "#", "Matrícula", "Estudiante", "Materia", "Fecha", "Hora", "Atraso"
+                "#", "Cédula", "Estudiante", "Materia", "Fecha", "Hora", "Atraso"
             }
         ) {
             boolean[] canEdit = new boolean [] {
